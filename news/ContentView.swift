@@ -1014,7 +1014,7 @@ enum TabType: String, CaseIterable {
 // MARK: - Main View
 struct ContentView: View {
     @State private var selectedTab: TabType = .news
-    
+     
     var body: some View {
         ZStack(alignment: .bottom) {
             // Main Content
