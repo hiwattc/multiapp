@@ -1084,7 +1084,7 @@ struct NewsView: View {
                 TextField("검색어를 입력하세요", text: $viewModel.searchText)
                     .focused($isSearchFocused)
                     .submitLabel(.search)
-                    .onSubmit {
+                    .onSubmit { 
                         isSearchFocused = false
                         Task {
                             await viewModel.search()
