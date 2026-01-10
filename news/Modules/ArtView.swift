@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - Art Models
 struct MetSearchResponse: Codable {

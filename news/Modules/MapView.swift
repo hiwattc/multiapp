@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import CoreLocation
 import WebKit
 
@@ -14,30 +15,30 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var location: CLLocationCoordinate2D?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    
+
     override init() {
         super.init()
-        manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.delegate = self
     }
-    
+
     func requestLocation() {
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         location = locations.first?.coordinate
-        manager.stopUpdatingLocation()
+        self.manager.stopUpdatingLocation()
     }
-    
+
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
         if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
             manager.startUpdatingLocation()
         }
     }
-    
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
     }
@@ -490,7 +491,7 @@ class DoubleTapDragGestureRecognizer: UIGestureRecognizer {
     private var isDragging = false
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesBegan(touches, with event)
+        super.touchesBegan(touches, with: event)
         
         guard let touch = touches.first else { return }
         let currentTime = Date().timeIntervalSince1970
@@ -512,7 +513,7 @@ class DoubleTapDragGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesMoved(touches, with event)
+        super.touchesMoved(touches, with: event)
         
         if isDragging {
             state = .changed
@@ -520,7 +521,7 @@ class DoubleTapDragGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesEnded(touches, with event)
+        super.touchesEnded(touches, with: event)
         
         if isDragging {
             state = .ended
@@ -530,7 +531,7 @@ class DoubleTapDragGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesCancelled(touches, with event)
+        super.touchesCancelled(touches, with: event)
         
         if isDragging {
             state = .cancelled
@@ -557,14 +558,23 @@ class DoubleTapDragGestureRecognizer: UIGestureRecognizer {
 
 extension UITouch {
     static var allTouches: Set<UITouch>? {
-        return UIApplication.shared.windows.first?.rootViewController?.view.window?.allTouches
+        // iOS 15+에서는 windowScene.windows를 사용
+        if #available(iOS 15.0, *) {
+            return UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?.windows
+                .first?.rootViewController?.view.window?.allTouches
+        } else {
+            // iOS 14 이하에서는 기존 API 사용
+            return UIApplication.shared.windows.first?.rootViewController?.view.window?.allTouches
+        }
     }
 }
 
 extension UIWindow {
     var allTouches: Set<UITouch>? {
         var touches = Set<UITouch>()
-        
+
         func findTouches(in view: UIView) {
             for subview in view.subviews {
                 if let gestureRecognizers = subview.gestureRecognizers {
@@ -577,11 +587,11 @@ extension UIWindow {
                 findTouches(in: subview)
             }
         }
-        
-        if let rootView = rootView.window?.rootViewController?.view {
-            findTouches(in: rootView)
+
+        if let rootViewController = rootViewController?.view {
+            findTouches(in: rootViewController)
         }
-        
+
         return touches.isEmpty ? nil : touches
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // MARK: - News Models
 struct NewsResponse: Codable {
