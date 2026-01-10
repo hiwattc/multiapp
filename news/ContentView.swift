@@ -6,6 +6,8 @@ enum TabType: String, CaseIterable {
     case news = "뉴스"
     case map = "지도"
     case art = "미술"
+    case ping = "핑"
+    case menu = "전체"
 
     var icon: String {
         switch self {
@@ -13,6 +15,8 @@ enum TabType: String, CaseIterable {
         case .map: return "map.fill"
         case .art: return "paintpalette.fill"
         case .habit: return "checkmark.circle.fill"
+        case .ping: return "network"
+        case .menu: return "square.grid.2x2.fill"
         }
     }
 }
@@ -112,6 +116,10 @@ struct ContentView: View {
                     MapView()
                 case .art:
                     ArtView()
+                case .ping:
+                    PingView()
+                case .menu:
+                    MenuView()
                 }
             }
 

@@ -355,7 +355,8 @@ struct HabitView: View {
                     .frame(width: 44, height: 44)
             }
         }
-        .padding()
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
         .background(Color(UIColor.secondarySystemGroupedBackground))
     }
 
@@ -425,29 +426,33 @@ struct HabitView: View {
                 .foregroundColor(.primary)
                 .padding(.horizontal)
 
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 8)], spacing: 8) {
-                    ForEach(recommendedHabits, id: \.self) { habit in
-                    Button(action: {
-                        viewModel.newHabitTitle = habit
-                        // 추천 습관 선택 후에도 입력창 포커스 유지
-                    }) {
+            GeometryReader { geometry in
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), spacing: 8)], spacing: 8) {
+                        ForEach(recommendedHabits, id: \.self) { habit in
+                            Button(action: {
+                                viewModel.newHabitTitle = habit
+                                // 추천 습관 선택 후에도 입력창 포커스 유지
+                            }) {
                             Text(habit)
-                                .font(.caption)
+                                .font(.callout)
                                 .foregroundColor(.blue)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 6)
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(8)
-                                .lineLimit(2)
-                                .minimumScaleFactor(0.8)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.blue.opacity(0.1))
+                                    .cornerRadius(8)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.8)
+                            }
                         }
                     }
+                    .padding(.horizontal)
+                    .frame(minHeight: geometry.size.height * 0.8) // 화면의 80% 높이 사용
                 }
-                .padding(.horizontal)
+                .frame(height: geometry.size.height * 0.8) // ScrollView 자체 높이 설정
             }
-            .frame(maxHeight: 200) // 최대 높이 제한으로 스크롤 활성화
+            .frame(height: 500) // 전체 GeometryReader 높이 설정
         }
         .padding(.bottom)
         .background(Color(UIColor.secondarySystemGroupedBackground))
@@ -522,7 +527,7 @@ struct HabitRow: View {
                                 }) {
                                     ZStack {
                                         Circle()
-                                            .fill(viewModel.isCompleted(habitId: habit.id, day: day) ? Color.green : Color.gray.opacity(0.2))
+                                            .fill(viewModel.isCompleted(habitId: habit.id, day: day) ? getCompletionColor(for: day) : Color.gray.opacity(0.2))
                                             .frame(width: 36, height: 36)
 
                                         if viewModel.isCompleted(habitId: habit.id, day: day) {
@@ -593,6 +598,14 @@ struct HabitRow: View {
         return day == todayDay &&
                viewModel.currentMonth == todayMonth &&
                viewModel.currentYear == todayYear
+    }
+
+    private func getCompletionColor(for day: Int) -> Color {
+        if isToday(day: day) {
+            return Color.green // 오늘 날짜: 밝은 녹색
+        } else {
+            return Color.green.opacity(0.5) // 이전/미래 날짜: 50% 어두운 녹색
+        }
     }
 }
 
