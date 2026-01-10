@@ -79,12 +79,12 @@ struct BottomTabBar: View {
                                 .fontWeight(.medium)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 8)
                         .foregroundColor(selectedTab == tab ? .blue : .gray)
                     }
                 }
             }
-            .padding(.bottom, 20) // 홈 인디케이터 공간 확보
+            .padding(.bottom, 0) // 홈 인디케이터 공간 확보
             .background(
                 Color(UIColor.secondarySystemGroupedBackground)
                     .ignoresSafeArea(edges: .bottom)
@@ -97,6 +97,7 @@ struct BottomTabBar: View {
 // MARK: - Main View
 struct ContentView: View {
     @State private var selectedTab: TabType = .habit
+    @StateObject private var habitViewModel = HabitViewModel()
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -104,7 +105,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .habit:
-                    HabitView()
+                    HabitView(viewModel: habitViewModel)
                 case .news:
                     NewsView()
                 case .map:
@@ -113,9 +114,15 @@ struct ContentView: View {
                     ArtView()
                 }
             }
-            
-            // Bottom Tab Bar
-            BottomTabBar(selectedTab: $selectedTab)
+
+            // Bottom Tab Bar - 입력창 포커스 시 숨김
+            if !habitViewModel.isTextFieldFocused {
+                VStack(spacing: 0) {
+                    Spacer()
+                        .frame(height: 20) // 추가 공간 확보
+                    BottomTabBar(selectedTab: $selectedTab)
+                }
+            }
         }
     }
 }
