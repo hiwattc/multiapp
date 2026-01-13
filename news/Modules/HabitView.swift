@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import WidgetKit
 
 // MARK: - Habit Models
 struct Habit: Codable, Identifiable {
@@ -39,6 +40,11 @@ class HabitViewModel: ObservableObject {
     @Published var isTextFieldFocused = false
 
     private let saveKey = "SavedHabits"
+    private let appGroupID = "group.com.news.habit"
+
+    private var userDefaults: UserDefaults {
+        UserDefaults(suiteName: appGroupID) ?? .standard
+    }
 
     init() {
         loadHabits()
@@ -140,12 +146,15 @@ class HabitViewModel: ObservableObject {
 
     private func saveHabits() {
         if let encoded = try? JSONEncoder().encode(habits) {
-            UserDefaults.standard.set(encoded, forKey: saveKey)
+            userDefaults.set(encoded, forKey: saveKey)
         }
+
+        // 위젯 업데이트
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func loadHabits() {
-        if let data = UserDefaults.standard.data(forKey: saveKey),
+        if let data = userDefaults.data(forKey: saveKey),
            let decoded = try? JSONDecoder().decode([Habit].self, from: data) {
             habits = decoded
         }
