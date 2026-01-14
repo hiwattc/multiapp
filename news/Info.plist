@@ -17,5 +17,16 @@
 	<array>
 		<string>group.com.news.habit</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.43808598981-1amrngc7dq2vnki5uojdhvfer7h5cha3</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>43808598981-1amrngc7dq2vnki5uojdhvfer7h5cha3.apps.googleusercontent.com</string>
 </dict>
 </plist>

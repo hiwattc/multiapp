@@ -81,6 +81,18 @@ class HabitViewModel: ObservableObject {
         saveHabits()
     }
 
+    func updateHabitTitle(_ habit: Habit, newTitle: String) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }),
+              !newTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        habits[index].title = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        saveHabits()
+    }
+
+    func reorderHabits(from source: IndexSet, to destination: Int) {
+        habits.move(fromOffsets: source, toOffset: destination)
+        saveHabits()
+    }
+
     func toggleCompletion(habitId: UUID, day: Int) {
         guard let index = habits.firstIndex(where: { $0.id == habitId }) else { return }
 
@@ -179,6 +191,9 @@ struct MarqueeText: View {
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .onTapGesture {
+                        onRefresh()
+                    }
 
                 Spacer(minLength: 4)
 
@@ -224,6 +239,7 @@ let recommendedHabits = [
 struct HabitView: View {
     @ObservedObject var viewModel: HabitViewModel
     @FocusState private var isTextFieldFocused: Bool
+    @State private var editMode: EditMode = .inactive
 
     // Inspiration Quote State
     @State private var bibleVerses: [BibleVerse] = []
@@ -351,6 +367,20 @@ struct HabitView: View {
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(12)
                 }
+
+                Button(action: {
+                    withAnimation {
+                        editMode = editMode == .active ? .inactive : .active
+                    }
+                }) {
+                    Text(editMode == .active ? "완료" : "순서편집")
+                        .font(.caption)
+                        .foregroundColor(editMode == .active ? .green : .orange)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background((editMode == .active ? Color.green : Color.orange).opacity(0.1))
+                        .cornerRadius(12)
+                }
             }
 
             Spacer()
@@ -371,7 +401,7 @@ struct HabitView: View {
 
     private var addHabitSection: some View {
         HStack {
-            TextField("새 습관 추가", text: $viewModel.newHabitTitle)
+            TextField(habitPlaceholder, text: $viewModel.newHabitTitle)
                 .focused($isTextFieldFocused)
                 .submitLabel(.done)
                 .onSubmit {
@@ -411,21 +441,36 @@ struct HabitView: View {
     }
 
     private var habitsScrollView: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                ForEach(viewModel.habits) { habit in
-                    HabitRow(habit: habit, viewModel: viewModel)
-                }
+        List {
+            ForEach(viewModel.habits) { habit in
+                HabitRow(habit: habit, viewModel: viewModel, editMode: $editMode)
             }
-            .padding()
-            .padding(.bottom, 80)
+            .onMove(perform: viewModel.reorderHabits)
+            .onDelete { indexSet in
+                // 삭제 기능은 HabitRow에서 이미 처리되므로 여기서는 비워둠
+            }
         }
+        .environment(\.editMode, $editMode)
+        .listStyle(.insetGrouped)
+        .padding(.bottom, 80)
     }
 
     private func selectRandomVerse() {
         if !bibleVerses.isEmpty {
             selectedVerse = bibleVerses.randomElement()
+
+            // 진동 효과
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
         }
+    }
+
+    private var habitPlaceholder: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월 dd일"
+        let todayString = formatter.string(from: Date())
+        return "새 습관 추가 (\(todayString))"
     }
 
     private var recommendedHabitsSection: some View {
@@ -475,16 +520,52 @@ struct HabitView: View {
 struct HabitRow: View {
     let habit: Habit
     @ObservedObject var viewModel: HabitViewModel
+    @Binding var editMode: EditMode
     @State private var showingDeleteAlert = false
     @State private var showingDetailView = false
+    @State private var isEditingTitle = false
+    @State private var editingTitle = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Habit Title with Completion Stats and Delete Button
             HStack {
-                Text(habit.title)
-                    .font(.title2)
-                    .foregroundColor(.primary)
+                if isEditingTitle {
+                    HStack {
+                        TextField("습관 제목", text: $editingTitle)
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                saveTitleEdit()
+                            }
+
+                        Button(action: {
+                            saveTitleEdit()
+                        }) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.title3)
+                        }
+
+                        Button(action: {
+                            cancelTitleEdit()
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.red)
+                                .font(.title3)
+                        }
+                    }
+                } else {
+                    Text(habit.title)
+                        .font(.title2)
+                        .foregroundColor(.primary)
+                        .onTapGesture {
+                            if editMode == .inactive {
+                                startTitleEdit()
+                            }
+                        }
+                }
 
                 Spacer()
 
@@ -517,7 +598,9 @@ struct HabitRow: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                showingDetailView = true
+                if !isEditingTitle {
+                    showingDetailView = true
+                }
             }
 
             // Days Scroll View
@@ -615,6 +698,25 @@ struct HabitRow: View {
         } else {
             return Color.green.opacity(0.5) // 이전/미래 날짜: 50% 어두운 녹색
         }
+    }
+
+    private func startTitleEdit() {
+        editingTitle = habit.title
+        isEditingTitle = true
+    }
+
+    private func saveTitleEdit() {
+        let trimmedTitle = editingTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedTitle.isEmpty && trimmedTitle != habit.title {
+            viewModel.updateHabitTitle(habit, newTitle: trimmedTitle)
+        }
+        isEditingTitle = false
+        editingTitle = ""
+    }
+
+    private func cancelTitleEdit() {
+        isEditingTitle = false
+        editingTitle = ""
     }
 }
 
@@ -849,6 +951,10 @@ struct HabitDetailView: View {
     private func selectRandomVerse() {
         if !bibleVerses.isEmpty {
             selectedVerse = bibleVerses.randomElement()
+
+            // 진동 효과
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
         }
     }
 }
