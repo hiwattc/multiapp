@@ -1,4 +1,6 @@
 import SwiftUI
+import UIKit
+import Combine
 
 // MARK: - Tab Type
 enum TabType: String, CaseIterable {
@@ -100,6 +102,7 @@ struct BottomTabBar: View {
 
 // MARK: - Main View
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: TabType = .habit
     @StateObject private var habitViewModel = HabitViewModel()
     
@@ -130,6 +133,13 @@ struct ContentView: View {
                         .frame(height: 20) // 추가 공간 확보
                     BottomTabBar(selectedTab: $selectedTab)
                 }
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                // 앱이 포그라운드로 돌아올 때마다 배지 초기화
+                UIApplication.shared.applicationIconBadgeNumber = 0
+                print("🔔 앱 활성화 시 알림 배지 초기화: \(UIApplication.shared.applicationIconBadgeNumber)")
             }
         }
     }

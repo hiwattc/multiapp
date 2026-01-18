@@ -1,17 +1,22 @@
 import SwiftUI
 import Combine
 import WidgetKit
+import UserNotifications
 
 // MARK: - Habit Models
 struct Habit: Codable, Identifiable {
     let id: UUID
     var title: String
     var completions: [String: Bool] // "yyyy-MM-dd": true/false
+    var reminderTime: Date? // 알림 시간
+    var isReminderEnabled: Bool // 알림 활성화 여부
 
-    init(id: UUID = UUID(), title: String, completions: [String: Bool] = [:]) {
+    init(id: UUID = UUID(), title: String, completions: [String: Bool] = [:], reminderTime: Date? = nil, isReminderEnabled: Bool = false) {
         self.id = id
         self.title = title
         self.completions = completions
+        self.reminderTime = reminderTime
+        self.isReminderEnabled = isReminderEnabled
     }
 }
 
@@ -39,6 +44,22 @@ class HabitViewModel: ObservableObject {
     @Published var scrollToToday = false
     @Published var isTextFieldFocused = false
 
+    // 명언 데이터
+    var bibleVerses: [BibleVerse] {
+        [
+            BibleVerse(id: 1, reference: "잠언 21:5", krv: "부지런한 자의 경영은 풍부함에 이르거니와", niv: "The plans of the diligent lead to profit.", themes: ["계획", "부지런함"]),
+            BibleVerse(id: 2, reference: "고린도전서 9:27", krv: "내 몸을 쳐 복종하게 함은", niv: "I discipline my body and keep it under control.", themes: ["절제", "자기관리"]),
+            BibleVerse(id: 3, reference: "잠언 16:3", krv: "너의 행사를 여호와께 맡기라", niv: "Commit to the Lord whatever you do.", themes: ["계획", "신뢰"]),
+            BibleVerse(id: 4, reference: "갈라디아서 6:9", krv: "선한 일을 행하다가 낙심하지 말지니", niv: "Let us not become weary in doing good.", themes: ["지속", "인내"]),
+            BibleVerse(id: 5, reference: "잠언 4:23", krv: "무릇 지킬만한 것보다 네 마음을 지키라", niv: "Above all else, guard your heart.", themes: ["멘탈관리", "자기통제"]),
+            BibleVerse(id: 6, reference: "전도서 9:10", krv: "무엇이든지 손이 할 일을 힘을 다하여 할지니", niv: "Whatever your hand finds to do, do it with all your might.", themes: ["몰입", "태도"]),
+            BibleVerse(id: 7, reference: "시편 119:105", krv: "주의 말씀은 내 발에 등이요", niv: "Your word is a lamp for my feet.", themes: ["방향성", "삶의 기준"]),
+            BibleVerse(id: 8, reference: "잠언 13:4", krv: "부지런한 자의 영혼은 풍족함을 얻느니라", niv: "The diligent are fully satisfied.", themes: ["부지런함", "보상"]),
+            BibleVerse(id: 9, reference: "잠언 24:27", krv: "일을 밖에 정리하고 밭에 준비하라", niv: "Finish your outdoor work and get your fields ready.", themes: ["준비", "계획"]),
+            BibleVerse(id: 10, reference: "마태복음 6:33", krv: "먼저 그의 나라와 그의 의를 구하라", niv: "Seek first his kingdom and his righteousness.", themes: ["우선순위", "신뢰"])
+        ]
+    }
+
     private let saveKey = "SavedHabits"
     private let appGroupID = "group.com.news.habit"
 
@@ -48,10 +69,19 @@ class HabitViewModel: ObservableObject {
 
     init() {
         loadHabits()
+        // 앱 시작 시 모든 습관 알림 스케줄링
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.scheduleAllHabitReminders()
+        }
     }
 
     var currentYear: Int {
         Calendar.current.component(.year, from: currentDate)
+    }
+
+    // 외부에서 접근 가능한 bibleVerses
+    var accessibleBibleVerses: [BibleVerse] {
+        bibleVerses
     }
 
     var currentMonth: Int {
@@ -91,6 +121,116 @@ class HabitViewModel: ObservableObject {
     func reorderHabits(from source: IndexSet, to destination: Int) {
         habits.move(fromOffsets: source, toOffset: destination)
         saveHabits()
+    }
+
+    // 알림 권한 요청
+    func requestNotificationPermission() async -> Bool {
+        let center = UNUserNotificationCenter.current()
+        do {
+            let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+            return granted
+        } catch {
+            print("알림 권한 요청 실패: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    // 습관 알림 설정
+    func setHabitReminder(_ habit: Habit, time: Date) async {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+
+        // 알림 권한 확인 및 요청
+        let granted = await requestNotificationPermission()
+        if !granted {
+            print("알림 권한이 거부되었습니다")
+            return
+        }
+
+        // 습관 알림 설정
+        habits[index].reminderTime = time
+        habits[index].isReminderEnabled = true
+        saveHabits()
+
+        // 알림 스케줄링
+        scheduleHabitReminder(habit, time: time)
+
+        print("✅ \(habit.title) 알림 설정됨: \(time.formatted(date: .omitted, time: .shortened))")
+    }
+
+    // 습관 알림 해제
+    func removeHabitReminder(_ habit: Habit) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+
+        habits[index].reminderTime = nil
+        habits[index].isReminderEnabled = false
+        saveHabits()
+
+        // 기존 알림 취소
+        cancelHabitReminder(habit)
+
+        print("❌ \(habit.title) 알림 해제됨")
+    }
+
+    // 알림 스케줄링
+    private func scheduleHabitReminder(_ habit: Habit, time: Date) {
+        let center = UNUserNotificationCenter.current()
+
+        // 기존 알림 취소
+        cancelHabitReminder(habit)
+
+        // 오늘의 알림 시간 계산
+        let calendar = Calendar.current
+        let now = Date()
+        var components = calendar.dateComponents([.year, .month, .day], from: now)
+        let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+
+        components.hour = timeComponents.hour
+        components.minute = timeComponents.minute
+
+        guard let reminderDate = calendar.date(from: components) else { return }
+
+        // 이미 지난 시간이면 내일로 설정
+        let finalDate = reminderDate > now ? reminderDate : calendar.date(byAdding: .day, value: 1, to: reminderDate)!
+
+        let content = UNMutableNotificationContent()
+        content.title = "습관 알림"
+        content.body = "'\(habit.title)' 습관을 체크하세요!"
+        content.sound = .default
+        content.badge = 1
+
+        let componentsForTrigger = calendar.dateComponents([.hour, .minute], from: finalDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: componentsForTrigger, repeats: true)
+
+        let request = UNNotificationRequest(identifier: "habit-\(habit.id.uuidString)", content: content, trigger: trigger)
+
+        center.add(request) { error in
+            if let error = error {
+                print("알림 스케줄링 실패: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // 알림 취소
+    private func cancelHabitReminder(_ habit: Habit) {
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: ["habit-\(habit.id.uuidString)"])
+    }
+
+    // 모든 습관에 대한 알림 스케줄링 (앱 시작 시 호출)
+    func scheduleAllHabitReminders() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let todayString = String(format: "%04d-%02d-%02d",
+                                calendar.component(.year, from: today),
+                                calendar.component(.month, from: today),
+                                calendar.component(.day, from: today))
+
+        for habit in habits where habit.isReminderEnabled {
+            if let reminderTime = habit.reminderTime {
+                // 습관 완료 여부와 상관없이 모든 습관에 대해 매일 알림 스케줄링
+                scheduleHabitReminder(habit, time: reminderTime)
+            }
+        }
     }
 
     func toggleCompletion(habitId: UUID, day: Int) {
@@ -240,6 +380,8 @@ struct HabitView: View {
     @ObservedObject var viewModel: HabitViewModel
     @FocusState private var isTextFieldFocused: Bool
     @State private var editMode: EditMode = .inactive
+    @State private var showingDeleteConfirmation = false
+    @State private var habitToDelete: Habit?
 
     // Inspiration Quote State
     @State private var bibleVerses: [BibleVerse] = []
@@ -335,6 +477,21 @@ struct HabitView: View {
         }
         .onChange(of: isTextFieldFocused) { oldValue, newValue in
             viewModel.isTextFieldFocused = newValue
+        }
+        .alert("습관 삭제", isPresented: $showingDeleteConfirmation) {
+            Button("취소", role: .cancel) {
+                habitToDelete = nil
+            }
+            Button("삭제", role: .destructive) {
+                if let habit = habitToDelete {
+                    viewModel.deleteHabit(habit)
+                    habitToDelete = nil
+                }
+            }
+        } message: {
+            if let habit = habitToDelete {
+                Text("'\(habit.title)' 습관을 정말 삭제하시겠습니까?\n삭제된 습관의 모든 기록이 사라집니다.")
+            }
         }
     }
 
@@ -442,17 +599,21 @@ struct HabitView: View {
 
     private var habitsScrollView: some View {
         List {
-            ForEach(viewModel.habits) { habit in
+                ForEach(viewModel.habits) { habit in
                 HabitRow(habit: habit, viewModel: viewModel, editMode: $editMode)
-            }
+                }
             .onMove(perform: viewModel.reorderHabits)
             .onDelete { indexSet in
-                // 삭제 기능은 HabitRow에서 이미 처리되므로 여기서는 비워둠
+                // 스와이프 삭제 시 확인 다이얼로그 표시
+                if let index = indexSet.first {
+                    habitToDelete = viewModel.habits[index]
+                    showingDeleteConfirmation = true
+                }
             }
         }
         .environment(\.editMode, $editMode)
         .listStyle(.insetGrouped)
-        .padding(.bottom, 80)
+            .padding(.bottom, 80)
     }
 
     private func selectRandomVerse() {
@@ -521,85 +682,86 @@ struct HabitRow: View {
     let habit: Habit
     @ObservedObject var viewModel: HabitViewModel
     @Binding var editMode: EditMode
-    @State private var showingDeleteAlert = false
     @State private var showingDetailView = false
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
+    @State private var showingTimePicker = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Habit Title with Completion Stats and Delete Button
-            HStack {
-                if isEditingTitle {
-                    HStack {
-                        TextField("습관 제목", text: $editingTitle)
-                            .font(.title2)
-                            .foregroundColor(.primary)
-                            .submitLabel(.done)
-                            .onSubmit {
-                                saveTitleEdit()
-                            }
-
-                        Button(action: {
-                            saveTitleEdit()
-                        }) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                                .font(.title3)
-                        }
-
-                        Button(action: {
-                            cancelTitleEdit()
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.red)
-                                .font(.title3)
-                        }
-                    }
-                } else {
-                    Text(habit.title)
+            if isEditingTitle {
+                // 편집 모드 - 버튼 없이 TextField만, 탭으로 취소
+                HStack {
+                    TextField("습관 제목", text: $editingTitle)
                         .font(.title2)
                         .foregroundColor(.primary)
-                        .onTapGesture {
-                            if editMode == .inactive {
-                                startTitleEdit()
-                            }
+                        .submitLabel(.done)
+                        .onSubmit {
+                            saveTitleEdit()
                         }
-                }
 
-                Spacer()
+                    Spacer()
 
-                // Completion Stats
-                let completedDays = (1...viewModel.daysInMonth).filter { viewModel.isCompleted(habitId: habit.id, day: $0) }.count
-                Text("완료: \(completedDays)/\(viewModel.daysInMonth)일")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                if completedDays > 0 {
-                    let percentage = Int((Double(completedDays) / Double(viewModel.daysInMonth)) * 100)
-                    Text("\(percentage)%")
+                    Text("엔터:저장, 탭:취소")
                         .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.green)
-                        .padding(.leading, 8)
+                        .foregroundColor(.secondary)
                 }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    // 편집 취소 - 원래 제목으로 복원
+                    editingTitle = habit.title
+                    isEditingTitle = false
+                }
+            } else {
+                // 일반 모드 - 제스처 있음
+                HStack {
+                    HStack(spacing: 8) {
+                        Text(habit.title)
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                            .onTapGesture {
+                                if editMode == .inactive {
+                                    startTitleEdit()
+                                }
+                            }
 
-                Button(action: {
-                    showingDeleteAlert = true
-                }) {
-                    Image(systemName: "trash.fill")
+                        // 알림 상태 표시
+                        if habit.isReminderEnabled {
+                            Image(systemName: "bell.fill")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if editMode == .inactive {
+                            showingDetailView = true
+                        }
+                    }
+
+                    Spacer()
+
+                    // Completion Stats
+                    let completedDays = (1...viewModel.daysInMonth).filter { viewModel.isCompleted(habitId: habit.id, day: $0) }.count
+                    Text("완료: \(completedDays)/\(viewModel.daysInMonth)일")
                         .font(.caption)
-                        .foregroundColor(.red)
-                        .padding(8)
-                        .background(Color.red.opacity(0.1))
-                        .clipShape(Circle())
+                        .foregroundColor(.secondary)
+
+                    if completedDays > 0 {
+                        let percentage = Int((Double(completedDays) / Double(viewModel.daysInMonth)) * 100)
+                        Text("\(percentage)%")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.green)
+                            .padding(.leading, 8)
+                    }
                 }
-                .padding(.leading, 8)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                if !isEditingTitle {
-                    showingDetailView = true
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if editMode == .inactive {
+                        showingDetailView = true
+                    }
                 }
             }
 
@@ -653,16 +815,25 @@ struct HabitRow: View {
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
-        .alert("습관 삭제", isPresented: $showingDeleteAlert) {
-            Button("취소", role: .cancel) { }
-            Button("삭제", role: .destructive) {
-                viewModel.deleteHabit(habit)
+        .swipeActions(edge: .leading) {
+            // 알림 버튼
+            Button(action: {
+                if habit.isReminderEnabled {
+                    viewModel.removeHabitReminder(habit)
+                } else {
+                    showingTimePicker = true
+                }
+            }) {
+                Label(habit.isReminderEnabled ? "알림 해제" : "알림 설정",
+                      systemImage: habit.isReminderEnabled ? "bell.slash.fill" : "bell.fill")
             }
-        } message: {
-            Text("'\(habit.title)' 습관을 삭제하시겠습니까?")
+            .tint(habit.isReminderEnabled ? .orange : .blue)
         }
         .sheet(isPresented: $showingDetailView) {
             HabitDetailView(habit: habit, viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingTimePicker) {
+            TimePickerSheet(habit: habit, viewModel: viewModel, isPresented: $showingTimePicker)
         }
     }
 
@@ -956,6 +1127,53 @@ struct HabitDetailView: View {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
         }
+    }
+}
+
+// MARK: - Time Picker Sheet
+struct TimePickerSheet: View {
+    let habit: Habit
+    @ObservedObject var viewModel: HabitViewModel
+    @Binding var isPresented: Bool
+    @State private var selectedTime = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("알림 시간 설정")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("'\(habit.title)' 습관의 알림 시간을 설정하세요")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                DatePicker("알림 시간",
+                          selection: $selectedTime,
+                          displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .labelsHidden()
+                    .padding()
+
+                Spacer()
+            }
+            .padding(.top, 20)
+            .navigationBarItems(
+                leading: Button("취소") {
+                    isPresented = false
+                },
+                trailing: Button("설정") {
+                    Task {
+                        await viewModel.setHabitReminder(habit, time: selectedTime)
+                        isPresented = false
+                    }
+                }
+                .fontWeight(.semibold)
+            )
+        }
+        .presentationDetents([.medium])
     }
 }
 

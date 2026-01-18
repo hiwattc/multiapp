@@ -11,6 +11,16 @@
     <string>현재 위치를 지도에 표시하기 위해 위치 권한이 필요합니다.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>지도 기능을 위해 위치 권한이 필요합니다.</string>
+	<key>NSAppleSignInUsageDescription</key>
+	<string>Apple ID로 로그인하여 계정을 관리하기 위해 사용됩니다.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>생체인증으로 빠르고 안전하게 인증하기 위해 사용됩니다.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>습관 알림을 보내기 위해 사용됩니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>증강현실 기능을 위해 카메라 접근이 필요합니다.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>걸음 수 측정을 위해 모션 데이터 접근이 필요합니다.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>명화를 사진 앱에 저장하기 위해 권한이 필요합니다.</string>
 	<key>com.apple.security.application-groups</key>
