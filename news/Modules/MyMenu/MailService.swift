@@ -181,8 +181,17 @@ class MailService: ObservableObject {
             let isCompleted = habit.completions[todayString] == true
             let statusText = isCompleted ? "✅ 완료" : "❌ 미완료"
             let statusClass = isCompleted ? "completed" : "not-completed"
-            let reminderText = habit.isReminderEnabled ?
-                "\(habit.reminderTime?.formatted(date: .omitted, time: .shortened) ?? "시간 미설정")" : "설정 안됨"
+            
+            // 여러 알림 시간 처리
+            let reminderText: String
+            if habit.reminderTimes.isEmpty {
+                reminderText = "설정 안됨"
+            } else if habit.reminderTimes.count == 1 {
+                reminderText = habit.reminderTimes[0].formatted(date: .omitted, time: .shortened)
+            } else {
+                let times = habit.reminderTimes.map { $0.formatted(date: .omitted, time: .shortened) }.joined(separator: ", ")
+                reminderText = "\(times) (\(habit.reminderTimes.count)개)"
+            }
 
             html += """
                     <tr>

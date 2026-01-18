@@ -141,144 +141,2419 @@
       "themes": ["행동습관", "성품"]
     },
     {
-        "id": 1,
+        "id": 21,
         "reference": "벤저민 프랭클린",
         "krv": "계획 없는 삶은 실패다",
         "niv": "Failing to plan is planning to fail.",
         "themes": ["계획", "기록", "자기관리"]
       },
       {
-        "id": 2,
+        "id": 22,
         "reference": "아리스토텔레스",
         "krv": "습관이 곧 인간이다",
         "niv": "We are what we repeatedly do.",
         "themes": ["습관형성", "철학", "반복"]
       },
       {
-        "id": 3,
+        "id": 23,
         "reference": "공자",
         "krv": "날마다 자신을 반성하라",
         "niv": "吾日三省吾身",
         "themes": ["성찰", "자기점검"]
       },
       {
-        "id": 4,
+        "id": 24,
         "reference": "마르쿠스 아우렐리우스",
         "krv": "생각이 인생을 만든다",
         "niv": "Our life is what our thoughts make it.",
         "themes": ["멘탈관리", "기록", "사고습관"]
       },
       {
-        "id": 5,
+        "id": 25,
         "reference": "아이작 뉴턴",
         "krv": "집중이 발견을 낳는다",
         "niv": "If I have seen further, it is by standing on the shoulders of giants.",
         "themes": ["집중", "연구", "몰입"]
       },
       {
-        "id": 6,
+        "id": 26,
         "reference": "찰스 다윈",
         "krv": "지속이 진화를 만든다",
         "niv": "The most responsive to change survives.",
         "themes": ["지속성", "관찰", "루틴"]
       },
       {
-        "id": 7,
+        "id": 27,
         "reference": "니콜라 테슬라",
         "krv": "상상은 현실이 된다",
         "niv": "The present is theirs; the future is mine.",
         "themes": ["창의성", "시각화"]
       },
       {
-        "id": 8,
+        "id": 28,
         "reference": "마리 퀴리",
         "krv": "두려움은 극복된다",
         "niv": "Nothing in life is to be feared, it is only to be understood.",
         "themes": ["학습", "멘탈관리", "용기"]
       },
       {
-        "id": 9,
+        "id": 29,
         "reference": "어니스트 헤밍웨이",
         "krv": "매일 써라",
         "niv": "Write drunk, edit sober.",
         "themes": ["글쓰기", "루틴", "실천"]
       },
       {
-        "id": 10,
+        "id": 30,
         "reference": "무라카미 하루키",
         "krv": "계속 달리고 쓴다",
         "niv": "I write every day and run every day.",
         "themes": ["운동", "창작", "루틴"]
       },
       {
-        "id": 11,
+        "id": 31,
         "reference": "베토벤",
         "krv": "규칙이 자유를 만든다",
         "niv": "Music is a higher revelation than philosophy.",
         "themes": ["규칙", "창작", "집중"]
       },
       {
-        "id": 12,
+        "id": 32,
         "reference": "빈센트 반 고흐",
         "krv": "고통 속에 예술이 있다",
         "niv": "I dream my painting and paint my dream.",
         "themes": ["감정관리", "예술", "표현"]
       },
       {
-        "id": 13,
+        "id": 33,
         "reference": "스티브 잡스",
         "krv": "단순함은 궁극의 정교함",
         "niv": "Simplicity is the ultimate sophistication.",
         "themes": ["미니멀리즘", "의사결정"]
       },
       {
-        "id": 14,
+        "id": 34,
         "reference": "일론 머스크",
         "krv": "시간은 가장 귀하다",
         "niv": "I work like hell.",
         "themes": ["시간관리", "생산성"]
       },
       {
-        "id": 15,
+        "id": 35,
         "reference": "제프 베조스",
         "krv": "장기적으로 생각하라",
         "niv": "Be stubborn on vision, flexible on details.",
         "themes": ["비전", "의사결정"]
       },
       {
-        "id": 16,
+        "id": 36,
         "reference": "워런 버핏",
         "krv": "읽고 또 읽어라",
         "niv": "The best investment you can make is in yourself.",
         "themes": ["독서", "자기계발"]
       },
       {
-        "id": 17,
+        "id": 37,
         "reference": "마이클 조던",
         "krv": "실패가 성공을 만든다",
-        "niv": "I’ve failed over and over again, and that is why I succeed.",
+        "niv": "I've failed over and over again, and that is why I succeed.",
         "themes": ["훈련", "성장", "회복탄력성"]
       },
       {
-        "id": 18,
+        "id": 38,
         "reference": "코비 브라이언트",
         "krv": "노력은 배신하지 않는다",
         "niv": "The moment you give up is the moment you let someone else win.",
         "themes": ["멘탈", "훈련", "집중"]
       },
       {
-        "id": 19,
+        "id": 39,
         "reference": "크리스티아누 호날두",
         "krv": "재능은 관리된다",
         "niv": "Talent without hard work is nothing.",
         "themes": ["자기관리", "건강", "절제"]
       },
       {
-        "id": 20,
+        "id": 40,
         "reference": "타이거 우즈",
         "krv": "연습이 차이를 만든다",
         "niv": "You can always get better.",
         "themes": ["연습", "멘탈관리"]
+      },
+      {
+        "id": 41,
+        "reference": "레오나르도 다빈치",
+        "krv": "관찰이 예술을 만든다",
+        "niv": "Learning never exhausts the mind.",
+        "themes": ["관찰", "학습", "창의성"]
+      },
+      {
+        "id": 42,
+        "reference": "파블로 피카소",
+        "krv": "행동이 영감을 낳는다",
+        "niv": "Action is the foundational key to all success.",
+        "themes": ["실천", "창작", "행동"]
+      },
+      {
+        "id": 43,
+        "reference": "알베르트 아인슈타인",
+        "krv": "호기심이 발견을 만든다",
+        "niv": "I have no special talent. I am only passionately curious.",
+        "themes": ["호기심", "학습", "탐구"]
+      },
+      {
+        "id": 44,
+        "reference": "마하트마 간디",
+        "krv": "작은 행동이 세상을 바꾼다",
+        "niv": "Be the change you wish to see in the world.",
+        "themes": ["실천", "작은습관", "변화"]
+      },
+      {
+        "id": 45,
+        "reference": "넬슨 만델라",
+        "krv": "불가능은 없다",
+        "niv": "It always seems impossible until it's done.",
+        "themes": ["인내", "멘탈관리", "목표"]
+      },
+      {
+        "id": 46,
+        "reference": "윈스턴 처칠",
+        "krv": "포기하지 말라",
+        "niv": "Never, never, never give up.",
+        "themes": ["인내", "지속성", "회복탄력성"]
+      },
+      {
+        "id": 47,
+        "reference": "헬렌 켈러",
+        "krv": "장애물은 기회다",
+        "niv": "Character cannot be developed in ease and quiet.",
+        "themes": ["극복", "성장", "멘탈관리"]
+      },
+      {
+        "id": 48,
+        "reference": "마틴 루터 킹",
+        "krv": "꿈을 가져라",
+        "niv": "I have a dream.",
+        "themes": ["비전", "목표", "희망"]
+      },
+      {
+        "id": 49,
+        "reference": "오프라 윈프리",
+        "krv": "감사가 풍요를 낳는다",
+        "niv": "Be thankful for what you have.",
+        "themes": ["감사", "성찰", "멘탈관리"]
+      },
+      {
+        "id": 50,
+        "reference": "빌 게이츠",
+        "krv": "실패는 교사다",
+        "niv": "It's fine to celebrate success, but it is more important to heed the lessons of failure.",
+        "themes": ["학습", "성장", "회복탄력성"]
+      },
+      {
+        "id": 51,
+        "reference": "마크 저커버그",
+        "krv": "완벽보다 실행이 중요하다",
+        "niv": "Done is better than perfect.",
+        "themes": ["실천", "행동", "생산성"]
+      },
+      {
+        "id": 52,
+        "reference": "잭 마",
+        "krv": "오늘이 가장 쉬운 날이다",
+        "niv": "Today is hard, tomorrow will be worse, but the day after tomorrow will be sunshine.",
+        "themes": ["인내", "희망", "지속성"]
+      },
+      {
+        "id": 53,
+        "reference": "리처드 브랜슨",
+        "krv": "도전이 삶을 만든다",
+        "niv": "Screw it, let's do it.",
+        "themes": ["도전", "행동", "용기"]
+      },
+      {
+        "id": 54,
+        "reference": "피터 드러커",
+        "krv": "측정이 관리를 만든다",
+        "niv": "What gets measured gets managed.",
+        "themes": ["기록", "관리", "생산성"]
+      },
+      {
+        "id": 55,
+        "reference": "짐 론",
+        "krv": "규율이 자유를 만든다",
+        "niv": "Discipline is the bridge between goals and accomplishment.",
+        "themes": ["훈련", "목표", "자기관리"]
+      },
+      {
+        "id": 56,
+        "reference": "토니 로빈스",
+        "krv": "반복이 운명을 만든다",
+        "niv": "Repetition is the mother of skill.",
+        "themes": ["반복", "습관형성", "루틴"]
+      },
+      {
+        "id": 57,
+        "reference": "브루스 리",
+        "krv": "연습이 본능을 만든다",
+        "niv": "I fear not the man who has practiced 10,000 kicks once.",
+        "themes": ["연습", "훈련", "숙련"]
+      },
+      {
+        "id": 58,
+        "reference": "제임스 클리어",
+        "krv": "1%의 개선이 쌓인다",
+        "niv": "Every action you take is a vote for the type of person you wish to become.",
+        "themes": ["작은습관", "지속성", "성장"]
+      },
+      {
+        "id": 59,
+        "reference": "찰스 두히그",
+        "krv": "습관이 인생을 결정한다",
+        "niv": "Champions don't do extraordinary things. They do ordinary things without thinking.",
+        "themes": ["습관형성", "자동화", "루틴"]
+      },
+      {
+        "id": 60,
+        "reference": "스티븐 코비",
+        "krv": "중요한 일을 먼저 하라",
+        "niv": "The key is not to prioritize what's on your schedule, but to schedule your priorities.",
+        "themes": ["우선순위", "시간관리", "의사결정"]
+      },
+      {
+        "id": 61,
+        "reference": "데일 카네기",
+        "krv": "행동이 두려움을 이긴다",
+        "niv": "Inaction breeds doubt and fear. Action breeds confidence and courage.",
+        "themes": ["행동", "용기", "멘탈관리"]
+      },
+      {
+        "id": 62,
+        "reference": "나폴레옹 힐",
+        "krv": "생각이 현실이 된다",
+        "niv": "Whatever the mind can conceive and believe, it can achieve.",
+        "themes": ["사고습관", "비전", "시각화"]
+      },
+      {
+        "id": 63,
+        "reference": "칼 융",
+        "krv": "의식이 운명을 만든다",
+        "niv": "Until you make the unconscious conscious, it will direct your life.",
+        "themes": ["성찰", "자기인식", "멘탈관리"]
+      },
+      {
+        "id": 64,
+        "reference": "빅터 프랭클",
+        "krv": "태도가 자유를 만든다",
+        "niv": "Between stimulus and response there is a space. In that space is our power to choose.",
+        "themes": ["태도", "선택", "멘탈관리"]
+      },
+      {
+        "id": 65,
+        "reference": "에크하르트 톨레",
+        "krv": "현재에 집중하라",
+        "niv": "Realize deeply that the present moment is all you ever have.",
+        "themes": ["집중", "현재", "마음챙김"]
+      },
+      {
+        "id": 66,
+        "reference": "달라이 라마",
+        "krv": "평화는 안에서 시작된다",
+        "niv": "If you want others to be happy, practice compassion.",
+        "themes": ["마음챙김", "평화", "자기관리"]
+      },
+      {
+        "id": 67,
+        "reference": "틱낫한",
+        "krv": "호흡이 평화를 만든다",
+        "niv": "Breathing in, I calm my body. Breathing out, I smile.",
+        "themes": ["명상", "호흡", "멘탈관리"]
+      },
+      {
+        "id": 68,
+        "reference": "라이너 마리아 릴케",
+        "krv": "인내가 답을 낳는다",
+        "niv": "Have patience with everything unresolved in your heart.",
+        "themes": ["인내", "성찰", "성장"]
+      },
+      {
+        "id": 69,
+        "reference": "괴테",
+        "krv": "시작이 힘을 가진다",
+        "niv": "Whatever you can do or dream you can, begin it.",
+        "themes": ["시작", "행동", "용기"]
+      },
+      {
+        "id": 70,
+        "reference": "니체",
+        "krv": "고통이 성장을 만든다",
+        "niv": "That which does not kill us makes us stronger.",
+        "themes": ["극복", "성장", "회복탄력성"]
+      },
+      {
+        "id": 71,
+        "reference": "쇼펜하우어",
+        "krv": "의지가 세상을 만든다",
+        "niv": "The world is my representation.",
+        "themes": ["의지", "사고습관", "철학"]
+      },
+      {
+        "id": 72,
+        "reference": "소크라테스",
+        "krv": "자신을 알라",
+        "niv": "Know thyself.",
+        "themes": ["자기인식", "성찰", "지혜"]
+      },
+      {
+        "id": 73,
+        "reference": "플라톤",
+        "krv": "시작이 절반이다",
+        "niv": "The beginning is the most important part of the work.",
+        "themes": ["시작", "계획", "실천"]
+      },
+      {
+        "id": 74,
+        "reference": "세네카",
+        "krv": "시간을 아껴라",
+        "niv": "It is not that we have a short time to live, but that we waste a lot of it.",
+        "themes": ["시간관리", "생산성", "집중"]
+      },
+      {
+        "id": 75,
+        "reference": "에픽테토스",
+        "krv": "통제할 수 있는 것에 집중하라",
+        "niv": "It's not what happens to you, but how you react to it that matters.",
+        "themes": ["태도", "멘탈관리", "통제"]
+      },
+      {
+        "id": 76,
+        "reference": "랄프 왈도 에머슨",
+        "krv": "매일이 새로운 기회다",
+        "niv": "Write it on your heart that every day is the best day in the year.",
+        "themes": ["희망", "시작", "긍정"]
+      },
+      {
+        "id": 77,
+        "reference": "헨리 데이비드 소로",
+        "krv": "단순하게 살라",
+        "niv": "Simplify, simplify.",
+        "themes": ["미니멀리즘", "집중", "본질"]
+      },
+      {
+        "id": 78,
+        "reference": "마크 트웨인",
+        "krv": "시작이 가장 어렵다",
+        "niv": "The secret of getting ahead is getting started.",
+        "themes": ["시작", "행동", "실천"]
+      },
+      {
+        "id": 79,
+        "reference": "오스카 와일드",
+        "krv": "자신이 되어라",
+        "niv": "Be yourself; everyone else is already taken.",
+        "themes": ["자기다움", "진정성", "정체성"]
+      },
+      {
+        "id": 80,
+        "reference": "조지 버나드 쇼",
+        "krv": "미래를 창조하라",
+        "niv": "Life isn't about finding yourself. Life is about creating yourself.",
+        "themes": ["창조", "주도성", "비전"]
+      },
+      {
+        "id": 81,
+        "reference": "알프레드 노벨",
+        "krv": "행동으로 증명하라",
+        "niv": "If I have a thousand ideas and only one turns out to be good, I am satisfied.",
+        "themes": ["실험", "행동", "도전"]
+      },
+      {
+        "id": 82,
+        "reference": "토마스 에디슨",
+        "krv": "실패는 배움이다",
+        "niv": "I have not failed. I've just found 10,000 ways that won't work.",
+        "themes": ["실패", "학습", "인내"]
+      },
+      {
+        "id": 83,
+        "reference": "헨리 포드",
+        "krv": "생각이 행동을 만든다",
+        "niv": "Whether you think you can or you think you can't, you're right.",
+        "themes": ["사고습관", "신념", "멘탈관리"]
+      },
+      {
+        "id": 84,
+        "reference": "월트 디즈니",
+        "krv": "꿈꾸고 실행하라",
+        "niv": "If you can dream it, you can do it.",
+        "themes": ["꿈", "실천", "창의성"]
+      },
+      {
+        "id": 85,
+        "reference": "코코 샤넬",
+        "krv": "스타일은 습관이다",
+        "niv": "Elegance is refusal.",
+        "themes": ["절제", "선택", "일관성"]
+      },
+      {
+        "id": 86,
+        "reference": "마더 테레사",
+        "krv": "작은 일에도 큰 사랑을",
+        "niv": "Not all of us can do great things. But we can do small things with great love.",
+        "themes": ["작은습관", "실천", "사랑"]
+      },
+      {
+        "id": 87,
+        "reference": "로저 페더러",
+        "krv": "꾸준함이 위대함을 만든다",
+        "niv": "I fear no one, but respect everyone.",
+        "themes": ["루틴", "훈련", "존중"]
+      },
+      {
+        "id": 88,
+        "reference": "세리나 윌리엄스",
+        "krv": "한계는 깨기 위해 있다",
+        "niv": "I really think a champion is defined not by their wins but by how they can recover.",
+        "themes": ["회복탄력성", "멘탈", "극복"]
+      },
+      {
+        "id": 89,
+        "reference": "우사인 볼트",
+        "krv": "준비가 승리를 만든다",
+        "niv": "I trained 4 years to run 9 seconds.",
+        "themes": ["준비", "훈련", "집중"]
+      },
+      {
+        "id": 90,
+        "reference": "손흥민",
+        "krv": "겸손과 노력",
+        "niv": "I always try to do my best.",
+        "themes": ["노력", "겸손", "최선"]
+      },
+      {
+        "id": 91,
+        "reference": "잠언 27:17",
+        "krv": "철이 철을 날카롭게 하는 것 같이",
+        "niv": "As iron sharpens iron, so one person sharpens another.",
+        "themes": ["관계", "성장", "상호발전"]
+      },
+      {
+        "id": 92,
+        "reference": "빌립보서 4:13",
+        "krv": "내게 능력 주시는 자 안에서 모든 것을 할 수 있느니라",
+        "niv": "I can do all things through Christ who strengthens me.",
+        "themes": ["능력", "신뢰", "멘탈관리"]
+      },
+      {
+        "id": 93,
+        "reference": "잠언 3:5-6",
+        "krv": "네 명철을 의지하지 말라",
+        "niv": "Trust in the Lord with all your heart and lean not on your own understanding.",
+        "themes": ["신뢰", "의지", "방향성"]
+      },
+      {
+        "id": 94,
+        "reference": "야고보서 1:19",
+        "krv": "듣기는 속히 하고 말하기는 더디 하라",
+        "niv": "Everyone should be quick to listen, slow to speak.",
+        "themes": ["경청", "절제", "지혜"]
+      },
+      {
+        "id": 95,
+        "reference": "데살로니가전서 5:17",
+        "krv": "쉬지 말고 기도하라",
+        "niv": "Pray continually.",
+        "themes": ["기도", "루틴", "지속성"]
+      },
+      {
+        "id": 96,
+        "reference": "시편 46:10",
+        "krv": "너희는 가만히 있어 내가 하나님 됨을 알지어다",
+        "niv": "Be still, and know that I am God.",
+        "themes": ["고요", "명상", "멘탈관리"]
+      },
+      {
+        "id": 97,
+        "reference": "잠언 15:1",
+        "krv": "유순한 대답은 분노를 쉬게 하여도",
+        "niv": "A gentle answer turns away wrath.",
+        "themes": ["감정관리", "대화", "절제"]
+      },
+      {
+        "id": 98,
+        "reference": "고린도전서 10:31",
+        "krv": "무엇을 하든지 다 하나님의 영광을 위하여",
+        "niv": "Whatever you do, do it all for the glory of God.",
+        "themes": ["목적", "태도", "의미"]
+      },
+      {
+        "id": 99,
+        "reference": "마태복음 6:33",
+        "krv": "먼저 그의 나라와 그의 의를 구하라",
+        "niv": "Seek first his kingdom and his righteousness.",
+        "themes": ["우선순위", "가치관", "방향성"]
+      },
+      {
+        "id": 100,
+        "reference": "에베소서 5:16",
+        "krv": "세월을 아끼라",
+        "niv": "Making the most of every opportunity.",
+        "themes": ["시간관리", "기회", "생산성"]
+      },
+      {
+        "id": 101,
+        "reference": "잠언 10:4",
+        "krv": "손을 게으르게 놀리는 자는 가난하게 되고",
+        "niv": "Lazy hands make for poverty.",
+        "themes": ["부지런함", "근면", "책임"]
+      },
+      {
+        "id": 102,
+        "reference": "전도서 3:1",
+        "krv": "범사에 기한이 있고",
+        "niv": "There is a time for everything.",
+        "themes": ["타이밍", "계절", "인내"]
+      },
+      {
+        "id": 103,
+        "reference": "잠언 22:6",
+        "krv": "마땅히 행할 길을 아이에게 가르치라",
+        "niv": "Start children off on the way they should go.",
+        "themes": ["교육", "습관형성", "방향성"]
+      },
+      {
+        "id": 104,
+        "reference": "시편 1:2-3",
+        "krv": "그의 율법을 주야로 묵상하는도다",
+        "niv": "Meditates on his law day and night.",
+        "themes": ["묵상", "루틴", "성장"]
+      },
+      {
+        "id": 105,
+        "reference": "마태복음 7:7",
+        "krv": "구하라 그리하면 얻을 것이요",
+        "niv": "Ask and it will be given to you.",
+        "themes": ["기도", "행동", "지속성"]
+      },
+      {
+        "id": 106,
+        "reference": "히브리서 10:36",
+        "krv": "인내가 필요함은",
+        "niv": "You need to persevere.",
+        "themes": ["인내", "지속", "보상"]
+      },
+      {
+        "id": 107,
+        "reference": "잠언 18:21",
+        "krv": "죽고 사는 것이 혀의 힘에 달렸나니",
+        "niv": "The tongue has the power of life and death.",
+        "themes": ["언어", "말습관", "영향력"]
+      },
+      {
+        "id": 108,
+        "reference": "야고보서 1:5",
+        "krv": "지혜가 부족한 자는 하나님께 구하라",
+        "niv": "If any of you lacks wisdom, you should ask God.",
+        "themes": ["지혜", "기도", "학습"]
+      },
+      {
+        "id": 109,
+        "reference": "갈라디아서 5:22-23",
+        "krv": "성령의 열매는 사랑과 희락과 화평과",
+        "niv": "The fruit of the Spirit is love, joy, peace.",
+        "themes": ["성품", "자기관리", "열매"]
+      },
+      {
+        "id": 110,
+        "reference": "로마서 12:12",
+        "krv": "소망 중에 즐거워하며",
+        "niv": "Be joyful in hope, patient in affliction.",
+        "themes": ["희망", "인내", "긍정"]
+      },
+      {
+        "id": 111,
+        "reference": "잠언 14:23",
+        "krv": "모든 수고에는 이익이 있어도",
+        "niv": "All hard work brings a profit.",
+        "themes": ["노력", "보상", "근면"]
+      },
+      {
+        "id": 112,
+        "reference": "시편 127:2",
+        "krv": "그의 사랑하시는 자에게는 잠을 주시는도다",
+        "niv": "For he grants sleep to those he loves.",
+        "themes": ["휴식", "균형", "건강"]
+      },
+      {
+        "id": 113,
+        "reference": "전도서 11:4",
+        "krv": "바람을 살피는 자는 파종하지 못할 것이요",
+        "niv": "Whoever watches the wind will not plant.",
+        "themes": ["행동", "실천", "용기"]
+      },
+      {
+        "id": 114,
+        "reference": "마태복음 5:37",
+        "krv": "오직 너희 말은 옳다 옳다, 아니라 아니라 하라",
+        "niv": "Let your 'Yes' be 'Yes,' and your 'No,' 'No.'",
+        "themes": ["정직", "일관성", "진실성"]
+      },
+      {
+        "id": 115,
+        "reference": "잠언 11:25",
+        "krv": "구제를 좋아하는 자는 풍족하여질 것이요",
+        "niv": "A generous person will prosper.",
+        "themes": ["나눔", "풍요", "관대함"]
+      },
+      {
+        "id": 116,
+        "reference": "고린도후서 9:7",
+        "krv": "각각 그 마음에 정한 대로 할 것이요",
+        "niv": "Each of you should give what you have decided in your heart.",
+        "themes": ["결단", "의지", "계획"]
+      },
+      {
+        "id": 117,
+        "reference": "디모데후서 2:15",
+        "krv": "네가 진리의 말씀을 옳게 분별하라",
+        "niv": "Do your best to present yourself to God as one approved.",
+        "themes": ["학습", "분별", "최선"]
+      },
+      {
+        "id": 118,
+        "reference": "시편 34:14",
+        "krv": "악을 버리고 선을 행하며",
+        "niv": "Turn from evil and do good.",
+        "themes": ["선택", "실천", "도덕"]
+      },
+      {
+        "id": 119,
+        "reference": "잠언 25:28",
+        "krv": "자기의 마음을 제어하지 아니하는 자는",
+        "niv": "Like a city whose walls are broken through is a person who lacks self-control.",
+        "themes": ["자제력", "절제", "통제"]
+      },
+      {
+        "id": 120,
+        "reference": "베드로전서 5:7",
+        "krv": "너희 염려를 다 주께 맡기라",
+        "niv": "Cast all your anxiety on him.",
+        "themes": ["신뢰", "멘탈관리", "의지"]
+      },
+      {
+        "id": 121,
+        "reference": "마태복음 6:34",
+        "krv": "내일 일을 위하여 염려하지 말라",
+        "niv": "Do not worry about tomorrow.",
+        "themes": ["현재", "집중", "평화"]
+      },
+      {
+        "id": 122,
+        "reference": "잠언 19:21",
+        "krv": "사람의 마음에는 많은 계획이 있어도",
+        "niv": "Many are the plans in a person's heart.",
+        "themes": ["계획", "신뢰", "유연성"]
+      },
+      {
+        "id": 123,
+        "reference": "에베소서 4:26",
+        "krv": "해가 지도록 분을 품지 말라",
+        "niv": "Do not let the sun go down while you are still angry.",
+        "themes": ["감정관리", "용서", "화해"]
+      },
+      {
+        "id": 124,
+        "reference": "시편 16:8",
+        "krv": "내가 여호와를 항상 내 앞에 모심이여",
+        "niv": "I keep my eyes always on the Lord.",
+        "themes": ["집중", "방향성", "일관성"]
+      },
+      {
+        "id": 125,
+        "reference": "잠언 29:18",
+        "krv": "묵시가 없으면 백성이 방자히 행하거니와",
+        "niv": "Where there is no revelation, people cast off restraint.",
+        "themes": ["비전", "방향성", "목표"]
+      },
+      {
+        "id": 126,
+        "reference": "골로새서 3:2",
+        "krv": "위의 것을 생각하고 땅의 것을 생각하지 말라",
+        "niv": "Set your minds on things above.",
+        "themes": ["사고습관", "가치관", "우선순위"]
+      },
+      {
+        "id": 127,
+        "reference": "잠언 17:22",
+        "krv": "마음의 즐거움은 양약이라도",
+        "niv": "A cheerful heart is good medicine.",
+        "themes": ["긍정", "건강", "마음"]
+      },
+      {
+        "id": 128,
+        "reference": "디모데전서 4:8",
+        "krv": "육체의 연습은 약간의 유익이 있으나",
+        "niv": "Physical training is of some value.",
+        "themes": ["운동", "건강", "균형"]
+      },
+      {
+        "id": 129,
+        "reference": "시편 73:26",
+        "krv": "내 육체와 마음은 쇠약하나",
+        "niv": "My flesh and my heart may fail.",
+        "themes": ["의지", "힘", "신뢰"]
+      },
+      {
+        "id": 130,
+        "reference": "잠언 24:16",
+        "krv": "대저 의인은 일곱 번 넘어질지라도",
+        "niv": "For though the righteous fall seven times, they rise again.",
+        "themes": ["회복탄력성", "인내", "극복"]
+      },
+      {
+        "id": 131,
+        "reference": "야고보서 4:8",
+        "krv": "하나님을 가까이하라",
+        "niv": "Come near to God and he will come near to you.",
+        "themes": ["관계", "기도", "친밀함"]
+      },
+      {
+        "id": 132,
+        "reference": "시편 55:22",
+        "krv": "네 짐을 여호와께 맡기라",
+        "niv": "Cast your cares on the Lord.",
+        "themes": ["신뢰", "염려", "의지"]
+      },
+      {
+        "id": 133,
+        "reference": "잠언 28:13",
+        "krv": "자기의 죄를 숨기는 자는 형통하지 못하나",
+        "niv": "Whoever conceals their sins does not prosper.",
+        "themes": ["정직", "회개", "성장"]
+      },
+      {
+        "id": 134,
+        "reference": "고린도전서 15:58",
+        "krv": "항상 주의 일에 더욱 힘쓰라",
+        "niv": "Always give yourselves fully to the work of the Lord.",
+        "themes": ["헌신", "충성", "지속성"]
+      },
+      {
+        "id": 135,
+        "reference": "마태복음 11:28",
+        "krv": "수고하고 무거운 짐 진 자들아 내게로 오라",
+        "niv": "Come to me, all you who are weary and burdened.",
+        "themes": ["휴식", "회복", "평화"]
+      },
+      {
+        "id": 136,
+        "reference": "시편 51:10",
+        "krv": "하나님이여 내 속에 정한 마음을 창조하시고",
+        "niv": "Create in me a pure heart, O God.",
+        "themes": ["마음", "새로움", "변화"]
+      },
+      {
+        "id": 137,
+        "reference": "잠언 31:17",
+        "krv": "힘으로 허리를 동이며",
+        "niv": "She sets about her work vigorously.",
+        "themes": ["힘", "활력", "근면"]
+      },
+      {
+        "id": 138,
+        "reference": "에베소서 6:7",
+        "krv": "단 마음으로 섬기기를",
+        "niv": "Serve wholeheartedly.",
+        "themes": ["태도", "진심", "섬김"]
+      },
+      {
+        "id": 139,
+        "reference": "시편 139:23-24",
+        "krv": "나를 살피사 내 마음을 아시며",
+        "niv": "Search me, God, and know my heart.",
+        "themes": ["성찰", "자기점검", "진실"]
+      },
+      {
+        "id": 140,
+        "reference": "잠언 9:10",
+        "krv": "여호와를 경외하는 것이 지혜의 근본이요",
+        "niv": "The fear of the Lord is the beginning of wisdom.",
+        "themes": ["지혜", "경외", "근본"]
+      },
+      {
+        "id": 141,
+        "reference": "루미",
+        "krv": "상처가 빛이 들어오는 곳이다",
+        "niv": "The wound is the place where the Light enters you.",
+        "themes": ["치유", "희망", "성장"]
+      },
+      {
+        "id": 142,
+        "reference": "프레드 로저스",
+        "krv": "당신은 있는 그대로 특별하다",
+        "niv": "You are special just the way you are.",
+        "themes": ["자존감", "위로", "있는그대로"]
+      },
+      {
+        "id": 143,
+        "reference": "브레네 브라운",
+        "krv": "용기는 불완전함을 인정하는 것이다",
+        "niv": "Courage is to tell the story of who you are with your whole heart.",
+        "themes": ["용기", "진정성", "자기수용"]
+      },
+      {
+        "id": 144,
+        "reference": "파울로 코엘료",
+        "krv": "모든 것은 지나간다",
+        "niv": "Everything tells me that I am about to make a wrong decision, but making mistakes is just part of life.",
+        "themes": ["위로", "수용", "과정"]
+      },
+      {
+        "id": 145,
+        "reference": "알랭 드 보통",
+        "krv": "불안은 현대인의 정상적인 감정이다",
+        "niv": "Anyone who isn't embarrassed of who they were last year probably isn't learning enough.",
+        "themes": ["수용", "성장", "위로"]
+      },
+      {
+        "id": 146,
+        "reference": "엘리자베스 길버트",
+        "krv": "완벽하지 않아도 괜찮다",
+        "niv": "Done is better than good.",
+        "themes": ["완벽주의", "수용", "실천"]
+      },
+      {
+        "id": 147,
+        "reference": "존 그린",
+        "krv": "고통은 변화를 요구한다",
+        "niv": "Pain demands to be felt.",
+        "themes": ["감정", "수용", "치유"]
+      },
+      {
+        "id": 148,
+        "reference": "체리 스트레이드",
+        "krv": "혼자가 아니다",
+        "niv": "You don't have to be broken to grow.",
+        "themes": ["위로", "성장", "연결"]
+      },
+      {
+        "id": 149,
+        "reference": "글렌논 도일",
+        "krv": "우리는 모두 불완전하게 아름답다",
+        "niv": "We can do hard things.",
+        "themes": ["용기", "자기수용", "힘"]
+      },
+      {
+        "id": 150,
+        "reference": "매트 헤이그",
+        "krv": "당신이 여기 있어줘서 고맙다",
+        "niv": "You will one day experience joy that matches this pain.",
+        "themes": ["희망", "위로", "미래"]
+      },
+      {
+        "id": 151,
+        "reference": "칼릴 지브란",
+        "krv": "슬픔이 당신의 영혼을 깊게 한다",
+        "niv": "The deeper that sorrow carves into your being, the more joy you can contain.",
+        "themes": ["깊이", "감정", "성장"]
+      },
+      {
+        "id": 152,
+        "reference": "앤 라모트",
+        "krv": "거의 모든 것은 괜찮아질 것이다",
+        "niv": "Almost everything will work again if you unplug it for a few minutes.",
+        "themes": ["휴식", "회복", "희망"]
+      },
+      {
+        "id": 153,
+        "reference": "마야 안젤루",
+        "krv": "폭풍은 영원하지 않다",
+        "niv": "This too shall pass.",
+        "themes": ["인내", "희망", "시간"]
+      },
+      {
+        "id": 154,
+        "reference": "J.K. 롤링",
+        "krv": "어둠 속에서 빛을 켤 수 있다",
+        "niv": "Happiness can be found even in the darkest of times, if one only remembers to turn on the light.",
+        "themes": ["희망", "선택", "빛"]
+      },
+      {
+        "id": 155,
+        "reference": "C.S. 루이스",
+        "krv": "고통은 의미 있는 소리다",
+        "niv": "Pain insists upon being attended to.",
+        "themes": ["감정", "수용", "의미"]
+      },
+      {
+        "id": 156,
+        "reference": "로저 에버트",
+        "krv": "친절은 언제나 옳다",
+        "niv": "Kindness covers all of my political beliefs.",
+        "themes": ["친절", "연민", "관계"]
+      },
+      {
+        "id": 157,
+        "reference": "수잔 케인",
+        "krv": "조용한 힘이 있다",
+        "niv": "There's zero correlation between being the best talker and having the best ideas.",
+        "themes": ["내향성", "강점", "자기수용"]
+      },
+      {
+        "id": 158,
+        "reference": "비르질",
+        "krv": "언젠가 이 고통도 추억이 될 것이다",
+        "niv": "Perhaps even these things will be good to remember one day.",
+        "themes": ["시간", "희망", "관점"]
+      },
+      {
+        "id": 159,
+        "reference": "톨스토이",
+        "krv": "행복은 당신 안에 있다",
+        "niv": "If you want to be happy, be.",
+        "themes": ["행복", "선택", "내면"]
+      },
+      {
+        "id": 160,
+        "reference": "도스토예프스키",
+        "krv": "고통을 통해 아름다움을 본다",
+        "niv": "The soul is healed by being with children.",
+        "themes": ["치유", "순수", "희망"]
+      },
+      {
+        "id": 161,
+        "reference": "헤르만 헤세",
+        "krv": "모든 시작은 마법 같다",
+        "niv": "Within you, there is a stillness and a sanctuary.",
+        "themes": ["평화", "내면", "안식"]
+      },
+      {
+        "id": 162,
+        "reference": "빅터 위고",
+        "krv": "어둠 속에서도 음악이 있다",
+        "niv": "Music expresses that which cannot be said.",
+        "themes": ["표현", "위로", "예술"]
+      },
+      {
+        "id": 163,
+        "reference": "알베르 카뮈",
+        "krv": "겨울 한가운데서 봄을 발견했다",
+        "niv": "In the midst of winter, I found there was, within me, an invincible summer.",
+        "themes": ["희망", "내면", "힘"]
+      },
+      {
+        "id": 164,
+        "reference": "장 폴 사르트르",
+        "krv": "우리는 자유롭게 선택한다",
+        "niv": "We are our choices.",
+        "themes": ["자유", "선택", "주체성"]
+      },
+      {
+        "id": 165,
+        "reference": "시몬 베유",
+        "krv": "주의를 기울이는 것이 사랑이다",
+        "niv": "Attention is the rarest and purest form of generosity.",
+        "themes": ["관심", "사랑", "현존"]
+      },
+      {
+        "id": 166,
+        "reference": "토니 모리슨",
+        "krv": "당신은 자신의 이야기를 쓸 자격이 있다",
+        "niv": "If there's a book you want to read, but it hasn't been written yet, then you must write it.",
+        "themes": ["주체성", "창조", "가치"]
+      },
+      {
+        "id": 167,
+        "reference": "엘리 위젤",
+        "krv": "반대는 무관심이 아니라 사랑이다",
+        "niv": "The opposite of love is not hate, it's indifference.",
+        "themes": ["관심", "연결", "의미"]
+      },
+      {
+        "id": 168,
+        "reference": "앙투안 드 생텍쥐페리",
+        "krv": "진정한 것은 눈에 보이지 않는다",
+        "niv": "It is only with the heart that one can see rightly.",
+        "themes": ["본질", "마음", "진실"]
+      },
+      {
+        "id": 169,
+        "reference": "오스카 와일드",
+        "krv": "스스로를 사랑하는 것이 시작이다",
+        "niv": "To love oneself is the beginning of a lifelong romance.",
+        "themes": ["자기애", "시작", "관계"]
+      },
+      {
+        "id": 170,
+        "reference": "버지니아 울프",
+        "krv": "당신만의 방이 필요하다",
+        "niv": "A woman must have money and a room of her own.",
+        "themes": ["공간", "자기돌봄", "독립"]
+      },
+      {
+        "id": 171,
+        "reference": "카를로스 카스타네다",
+        "krv": "두려움은 선택이다",
+        "niv": "We either make ourselves miserable, or we make ourselves strong.",
+        "themes": ["선택", "힘", "태도"]
+      },
+      {
+        "id": 172,
+        "reference": "틱낫한",
+        "krv": "숨 쉬는 것만으로도 기적이다",
+        "niv": "Breathing in, I calm my body. Breathing out, I smile.",
+        "themes": ["현재", "평화", "감사"]
+      },
+      {
+        "id": 173,
+        "reference": "펄 벅",
+        "krv": "많은 사람들이 기쁨을 놓친다",
+        "niv": "Many people lose the small joys in the hope for the big happiness.",
+        "themes": ["현재", "작은기쁨", "감사"]
+      },
+      {
+        "id": 174,
+        "reference": "라이너 마리아 릴케",
+        "krv": "외로움은 성장의 공간이다",
+        "niv": "Perhaps all the dragons in our lives are princesses waiting for us to be brave.",
+        "themes": ["용기", "변화", "관점"]
+      },
+      {
+        "id": 175,
+        "reference": "마르틴 부버",
+        "krv": "관계 속에서 우리는 존재한다",
+        "niv": "All real living is meeting.",
+        "themes": ["관계", "만남", "존재"]
+      },
+      {
+        "id": 176,
+        "reference": "칼 로저스",
+        "krv": "있는 그대로의 당신이 충분하다",
+        "niv": "The curious paradox is that when I accept myself just as I am, then I can change.",
+        "themes": ["수용", "변화", "자기애"]
+      },
+      {
+        "id": 177,
+        "reference": "아브라함 매슬로",
+        "krv": "당신은 성장을 선택할 수 있다",
+        "niv": "One can choose to go back toward safety or forward toward growth.",
+        "themes": ["선택", "성장", "용기"]
+      },
+      {
+        "id": 178,
+        "reference": "빅터 프랭클",
+        "krv": "의미를 찾는 것이 치유다",
+        "niv": "Those who have a 'why' to live, can bear with almost any 'how'.",
+        "themes": ["의미", "목적", "희망"]
+      },
+      {
+        "id": 179,
+        "reference": "칼 융",
+        "krv": "그림자와 만나는 용기",
+        "niv": "I am not what happened to me, I am what I choose to become.",
+        "themes": ["선택", "정체성", "주체성"]
+      },
+      {
+        "id": 180,
+        "reference": "켄 윌버",
+        "krv": "초월하고 포함하라",
+        "niv": "We have to be willing to let go of the life we planned.",
+        "themes": ["수용", "유연성", "성장"]
+      },
+      {
+        "id": 181,
+        "reference": "존 카밧진",
+        "krv": "당신은 이미 완전하다",
+        "niv": "You can't stop the waves, but you can learn to surf.",
+        "themes": ["수용", "적응", "평화"]
+      },
+      {
+        "id": 182,
+        "reference": "타라 브랙",
+        "krv": "지금 이대로 괜찮다",
+        "niv": "The boundary to what we can accept is the boundary to our freedom.",
+        "themes": ["수용", "자유", "평화"]
+      },
+      {
+        "id": 183,
+        "reference": "페마 초드론",
+        "krv": "모든 것은 가르침이다",
+        "niv": "Nothing ever goes away until it has taught us what we need to know.",
+        "themes": ["배움", "수용", "성장"]
+      },
+      {
+        "id": 184,
+        "reference": "샤론 살츠버그",
+        "krv": "자비는 치유의 힘이다",
+        "niv": "You yourself, as much as anybody in the entire universe, deserve your love.",
+        "themes": ["자기자비", "사랑", "치유"]
+      },
+      {
+        "id": 185,
+        "reference": "잭 콘필드",
+        "krv": "마음은 정원과 같다",
+        "niv": "The trouble is, you think you have time.",
+        "themes": ["현재", "깨달음", "시간"]
+      },
+      {
+        "id": 186,
+        "reference": "에크하르트 톨레",
+        "krv": "지금 이 순간이 전부다",
+        "niv": "Realize deeply that the present moment is all you have.",
+        "themes": ["현재", "마음챙김", "평화"]
+      },
+      {
+        "id": 187,
+        "reference": "무라카미 하루키",
+        "krv": "고통은 피할 수 없지만 고난은 선택이다",
+        "niv": "Pain is inevitable. Suffering is optional.",
+        "themes": ["선택", "태도", "수용"]
+      },
+      {
+        "id": 188,
+        "reference": "오쇼 라즈니쉬",
+        "krv": "혼자임을 즐겨라",
+        "niv": "Aloneness is when you enjoy your own company.",
+        "themes": ["고독", "자기사랑", "평화"]
+      },
+      {
+        "id": 189,
+        "reference": "크리슈나무르티",
+        "krv": "관찰하되 판단하지 말라",
+        "niv": "The ability to observe without evaluating is the highest form of intelligence.",
+        "themes": ["마음챙김", "수용", "지혜"]
+      },
+      {
+        "id": 190,
+        "reference": "램 다스",
+        "krv": "지금 여기에 있어라",
+        "niv": "Be here now.",
+        "themes": ["현재", "존재", "평화"]
+      },
+      {
+        "id": 191,
+        "reference": "디팍 초프라",
+        "krv": "당신의 몸이 당신의 신전이다",
+        "niv": "Every cell in your body is eavesdropping on your thoughts.",
+        "themes": ["몸과마음", "건강", "자기돌봄"]
+      },
+      {
+        "id": 192,
+        "reference": "루이스 헤이",
+        "krv": "자신을 사랑하는 것이 치유다",
+        "niv": "Loving yourself is the most important thing you can do.",
+        "themes": ["자기애", "치유", "긍정"]
+      },
+      {
+        "id": 193,
+        "reference": "바이런 케이티",
+        "krv": "생각을 탐구하라",
+        "niv": "The only time we suffer is when we believe a thought.",
+        "themes": ["사고", "자유", "탐구"]
+      },
+      {
+        "id": 194,
+        "reference": "마샬 로젠버그",
+        "krv": "모든 행동은 욕구의 표현이다",
+        "niv": "What I want in my life is compassion.",
+        "themes": ["이해", "연민", "소통"]
+      },
+      {
+        "id": 195,
+        "reference": "게리 채프먼",
+        "krv": "사랑에는 다섯 가지 언어가 있다",
+        "niv": "Love is a choice you make from moment to moment.",
+        "themes": ["사랑", "선택", "관계"]
+      },
+      {
+        "id": 196,
+        "reference": "수 존슨",
+        "krv": "우리는 연결을 위해 태어났다",
+        "niv": "We are bonding animals.",
+        "themes": ["연결", "애착", "관계"]
+      },
+      {
+        "id": 197,
+        "reference": "하워드 가드너",
+        "krv": "모든 사람은 천재다",
+        "niv": "Everybody is a genius in their own way.",
+        "themes": ["강점", "다양성", "가치"]
+      },
+      {
+        "id": 198,
+        "reference": "캐롤 드웩",
+        "krv": "성장은 과정이다",
+        "niv": "Becoming is better than being.",
+        "themes": ["성장", "과정", "발전"]
+      },
+      {
+        "id": 199,
+        "reference": "앤절라 더크워스",
+        "krv": "열정과 인내가 재능을 이긴다",
+        "niv": "Enthusiasm is common. Endurance is rare.",
+        "themes": ["끈기", "인내", "성공"]
+      },
+      {
+        "id": 200,
+        "reference": "켈리 맥고니걸",
+        "krv": "스트레스는 당신을 강하게 한다",
+        "niv": "Stress is what arises when something you care about is at stake.",
+        "themes": ["스트레스", "성장", "관점"]
+      },
+      {
+        "id": 201,
+        "reference": "세종대왕",
+        "krv": "백성이 편안해야 나라가 평안하다",
+        "niv": "When the people are comfortable, the nation is at peace.",
+        "themes": ["배려", "책임", "리더십"]
+      },
+      {
+        "id": 202,
+        "reference": "이순신 장군",
+        "krv": "죽고자 하면 살고 살고자 하면 죽는다",
+        "niv": "Those who seek death shall live, and those who seek life shall die.",
+        "themes": ["용기", "결단", "역설"]
+      },
+      {
+        "id": 203,
+        "reference": "안중근 의사",
+        "krv": "하루라도 책을 읽지 않으면 입안에 가시가 돋는다",
+        "niv": "If I do not read for a day, thorns grow in my mouth.",
+        "themes": ["독서", "학습", "자기계발"]
+      },
+      {
+        "id": 204,
+        "reference": "김구 선생",
+        "krv": "나는 우리나라가 세계에서 가장 아름다운 나라가 되기를 원한다",
+        "niv": "I want our country to be the most beautiful country in the world.",
+        "themes": ["비전", "문화", "평화"]
+      },
+      {
+        "id": 205,
+        "reference": "윤동주 시인",
+        "krv": "죽는 날까지 하늘을 우러러 한 점 부끄럼이 없기를",
+        "niv": "Till the day I die, may I look up at the sky without shame.",
+        "themes": ["양심", "정직", "성찰"]
+      },
+      {
+        "id": 206,
+        "reference": "한용운 시인",
+        "krv": "님은 갔지만 나는 님을 보내지 아니하였습니다",
+        "niv": "You have gone, but I have not let you go.",
+        "themes": ["사랑", "기다림", "희망"]
+      },
+      {
+        "id": 207,
+        "reference": "김수영 시인",
+        "krv": "온몸으로 밀고 나가자",
+        "niv": "Push forward with your whole body.",
+        "themes": ["실천", "저항", "의지"]
+      },
+      {
+        "id": 208,
+        "reference": "박경리 작가",
+        "krv": "인생은 속도가 아니라 방향이다",
+        "niv": "Life is not about speed, but direction.",
+        "themes": ["방향성", "삶", "가치관"]
+      },
+      {
+        "id": 209,
+        "reference": "이문열 작가",
+        "krv": "인간은 자신이 선택한 만큼만 자유롭다",
+        "niv": "Man is free only as much as he chooses.",
+        "themes": ["선택", "자유", "책임"]
+      },
+      {
+        "id": 210,
+        "reference": "조정래 작가",
+        "krv": "역사를 잊은 민족에게 미래는 없다",
+        "niv": "A nation that forgets its history has no future.",
+        "themes": ["역사", "기억", "정체성"]
+      },
+      {
+        "id": 211,
+        "reference": "법정 스님",
+        "krv": "소유하지 않는 삶이 진정 자유롭다",
+        "niv": "A life without possessions is truly free.",
+        "themes": ["미니멀리즘", "자유", "평화"]
+      },
+      {
+        "id": 212,
+        "reference": "성철 스님",
+        "krv": "산은 산이요 물은 물이로다",
+        "niv": "Mountains are mountains, water is water.",
+        "themes": ["본질", "깨달음", "있는그대로"]
+      },
+      {
+        "id": 213,
+        "reference": "도종환 시인",
+        "krv": "흔들리지 않고 피는 꽃이 어디 있으랴",
+        "niv": "Where is the flower that blooms without swaying?",
+        "themes": ["성장", "시련", "아름다움"]
+      },
+      {
+        "id": 214,
+        "reference": "정약용",
+        "krv": "뜻이 있는 곳에 길이 있다",
+        "niv": "Where there is a will, there is a way.",
+        "themes": ["의지", "목표", "실천"]
+      },
+      {
+        "id": 215,
+        "reference": "이황",
+        "krv": "한 치의 시간도 아껴야 한다",
+        "niv": "Even an inch of time must be cherished.",
+        "themes": ["시간관리", "근면", "가치"]
+      },
+      {
+        "id": 216,
+        "reference": "이이",
+        "krv": "오늘 할 일을 내일로 미루지 말라",
+        "niv": "Do not put off today's work until tomorrow.",
+        "themes": ["실천", "시간관리", "책임"]
+      },
+      {
+        "id": 217,
+        "reference": "정몽주",
+        "krv": "이 몸이 죽고 죽어 일백 번 고쳐 죽어",
+        "niv": "Though this body die and die again a hundred times.",
+        "themes": ["충성", "신념", "일관성"]
+      },
+      {
+        "id": 218,
+        "reference": "허균",
+        "krv": "재주는 곧 병이 된다",
+        "niv": "Talent can become a disease.",
+        "themes": ["겸손", "경계", "균형"]
+      },
+      {
+        "id": 219,
+        "reference": "김시습",
+        "krv": "세상이 나를 버려도 나는 세상을 버리지 않는다",
+        "niv": "Even if the world abandons me, I will not abandon the world.",
+        "themes": ["인내", "사랑", "헌신"]
+      },
+      {
+        "id": 220,
+        "reference": "신사임당",
+        "krv": "자식을 가르치는 것이 나라를 세우는 것이다",
+        "niv": "Teaching children is building a nation.",
+        "themes": ["교육", "미래", "책임"]
+      },
+      {
+        "id": 221,
+        "reference": "장영실",
+        "krv": "하늘의 이치를 배우는 것이 백성을 이롭게 한다",
+        "niv": "Learning the principles of heaven benefits the people.",
+        "themes": ["학문", "실용", "봉사"]
+      },
+      {
+        "id": 222,
+        "reference": "황희 정승",
+        "krv": "다 옳소, 그것도 옳소",
+        "niv": "You are right, and that is also right.",
+        "themes": ["포용", "지혜", "균형"]
+      },
+      {
+        "id": 223,
+        "reference": "김홍도",
+        "krv": "그림은 백성의 삶을 담아야 한다",
+        "niv": "Painting must contain the lives of the people.",
+        "themes": ["예술", "현실", "공감"]
+      },
+      {
+        "id": 224,
+        "reference": "김정희",
+        "krv": "세한연후지송백지후조",
+        "niv": "Only after winter comes can we know the pine and cypress.",
+        "themes": ["시련", "진가", "인내"]
+      },
+      {
+        "id": 225,
+        "reference": "신채호",
+        "krv": "역사는 아와 비아의 투쟁의 기록이다",
+        "niv": "History is a record of the struggle between us and them.",
+        "themes": ["역사", "투쟁", "정체성"]
+      },
+      {
+        "id": 226,
+        "reference": "유관순 열사",
+        "krv": "내 손톱이 빠져나가고 내 코와 귀가 잘리더라도",
+        "niv": "Even if my fingernails are torn out and my nose and ears are cut off.",
+        "themes": ["용기", "희생", "신념"]
+      },
+      {
+        "id": 227,
+        "reference": "안창호 선생",
+        "krv": "나를 버리고 나라를 찾자",
+        "niv": "Abandon yourself and find the nation.",
+        "themes": ["헌신", "애국", "희생"]
+      },
+      {
+        "id": 228,
+        "reference": "방정환 선생",
+        "krv": "어린이는 어른보다 더 새로운 사람이다",
+        "niv": "Children are newer people than adults.",
+        "themes": ["존중", "미래", "가능성"]
+      },
+      {
+        "id": 229,
+        "reference": "김대중 대통령",
+        "krv": "행동하는 양심",
+        "niv": "Conscience in action.",
+        "themes": ["실천", "양심", "용기"]
+      },
+      {
+        "id": 230,
+        "reference": "BTS RM",
+        "krv": "자신을 사랑하라, 자신을 말하라",
+        "niv": "Love yourself, speak yourself.",
+        "themes": ["자기애", "표현", "용기"]
+      },
+      {
+        "id": 231,
+        "reference": "아리스토텔레스",
+        "krv": "탁월함은 행위가 아니라 습관이다",
+        "niv": "Excellence is not an act, but a habit.",
+        "themes": ["습관형성", "탁월함", "반복"]
+      },
+      {
+        "id": 232,
+        "reference": "아리스토텔레스",
+        "krv": "우리는 반복하는 것이 된다",
+        "niv": "We are what we repeatedly do.",
+        "themes": ["정체성", "반복", "습관"]
+      },
+      {
+        "id": 233,
+        "reference": "플라톤",
+        "krv": "시작이 가장 중요한 부분이다",
+        "niv": "The beginning is the most important part of the work.",
+        "themes": ["시작", "실천", "중요성"]
+      },
+      {
+        "id": 234,
+        "reference": "소크라테스",
+        "krv": "검토되지 않은 삶은 살 가치가 없다",
+        "niv": "The unexamined life is not worth living.",
+        "themes": ["성찰", "자기점검", "의미"]
+      },
+      {
+        "id": 235,
+        "reference": "에픽테토스",
+        "krv": "먼저 습관을 정복하라",
+        "niv": "First, say to yourself what you would be; then do what you have to do.",
+        "themes": ["자기통제", "순서", "실천"]
+      },
+      {
+        "id": 236,
+        "reference": "마르쿠스 아우렐리우스",
+        "krv": "새벽에 일어나는 것을 어려워하지 말라",
+        "niv": "At dawn, when you have trouble getting out of bed, tell yourself: I have to go to work.",
+        "themes": ["루틴", "의무", "실천"]
+      },
+      {
+        "id": 237,
+        "reference": "세네카",
+        "krv": "우리는 시간이 부족한 것이 아니라 낭비한다",
+        "niv": "It is not that we have a short time to live, but that we waste much of it.",
+        "themes": ["시간관리", "집중", "가치"]
+      },
+      {
+        "id": 238,
+        "reference": "세네카",
+        "krv": "매일 조금씩 나아가라",
+        "niv": "Each day acquire something that will fortify you.",
+        "themes": ["점진적개선", "성장", "축적"]
+      },
+      {
+        "id": 239,
+        "reference": "키케로",
+        "krv": "습관은 제2의 천성이다",
+        "niv": "Habit is second nature.",
+        "themes": ["습관", "본성", "자동화"]
+      },
+      {
+        "id": 240,
+        "reference": "플루타르코스",
+        "krv": "마음은 채워질 그릇이 아니라 불붙여질 불이다",
+        "niv": "The mind is not a vessel to be filled, but a fire to be kindled.",
+        "themes": ["학습", "동기", "열정"]
+      },
+      {
+        "id": 241,
+        "reference": "피타고라스",
+        "krv": "아침에 일어나서 오늘 무엇을 이룰지 생각하라",
+        "niv": "When you arise in the morning, think of what a privilege it is to be alive.",
+        "themes": ["아침루틴", "계획", "감사"]
+      },
+      {
+        "id": 242,
+        "reference": "헤라클레이토스",
+        "krv": "성격이 운명이다",
+        "niv": "Character is destiny.",
+        "themes": ["성품", "습관", "운명"]
+      },
+      {
+        "id": 243,
+        "reference": "디오게네스",
+        "krv": "단순하게 살아라",
+        "niv": "Live simply.",
+        "themes": ["미니멀리즘", "본질", "절제"]
+      },
+      {
+        "id": 244,
+        "reference": "임마누엘 칸트",
+        "krv": "규칙적인 생활이 자유를 만든다",
+        "niv": "Rules for happiness: something to do, someone to love, something to hope for.",
+        "themes": ["규칙성", "루틴", "행복"]
+      },
+      {
+        "id": 245,
+        "reference": "프리드리히 니체",
+        "krv": "습관이 삶을 견딜 만하게 만든다",
+        "niv": "Habit makes our life bearable.",
+        "themes": ["습관", "일상", "안정"]
+      },
+      {
+        "id": 246,
+        "reference": "니체",
+        "krv": "매일 조금씩 더 강해져라",
+        "niv": "What does not kill me makes me stronger.",
+        "themes": ["성장", "강인함", "극복"]
+      },
+      {
+        "id": 247,
+        "reference": "쇼펜하우어",
+        "krv": "작은 일상의 루틴이 삶을 만든다",
+        "niv": "Ordinary people think merely of spending time, great people think of using it.",
+        "themes": ["시간활용", "루틴", "의미"]
+      },
+      {
+        "id": 248,
+        "reference": "존 스튜어트 밀",
+        "krv": "행복한 사람은 습관적으로 좋은 일을 한다",
+        "niv": "The habit of analysis has a tendency to wear away the feelings.",
+        "themes": ["행복", "선행", "습관"]
+      },
+      {
+        "id": 249,
+        "reference": "버트런드 러셀",
+        "krv": "규칙적인 일과가 창의성을 키운다",
+        "niv": "Routine is the god of every social system.",
+        "themes": ["루틴", "창의성", "체계"]
+      },
+      {
+        "id": 250,
+        "reference": "장 자크 루소",
+        "krv": "자연스러운 습관이 최고다",
+        "niv": "Man is born free, but everywhere he is in chains.",
+        "themes": ["자연스러움", "자유", "본성"]
+      },
+      {
+        "id": 251,
+        "reference": "볼테르",
+        "krv": "완벽은 좋음의 적이다",
+        "niv": "Perfect is the enemy of good.",
+        "themes": ["실천", "완벽주의극복", "진행"]
+      },
+      {
+        "id": 252,
+        "reference": "블레즈 파스칼",
+        "krv": "습관은 우리의 두 번째 본성이다",
+        "niv": "Habit is a second nature that destroys the first.",
+        "themes": ["습관", "본성", "변화"]
+      },
+      {
+        "id": 253,
+        "reference": "몽테뉴",
+        "krv": "습관을 바꾸는 것은 자신을 바꾸는 것이다",
+        "niv": "The greatest thing in the world is to know how to belong to oneself.",
+        "themes": ["변화", "자기주도", "습관"]
+      },
+      {
+        "id": 254,
+        "reference": "데카르트",
+        "krv": "좋은 습관을 형성하는 것이 좋은 삶이다",
+        "niv": "The greatest minds are capable of the greatest vices as well as of the greatest virtues.",
+        "themes": ["습관형성", "선택", "삶"]
+      },
+      {
+        "id": 255,
+        "reference": "스피노자",
+        "krv": "자유는 필연성을 이해하는 것이다",
+        "niv": "Freedom is absolutely necessary for progress in science and the liberal arts.",
+        "themes": ["자유", "이해", "진보"]
+      },
+      {
+        "id": 256,
+        "reference": "존 로크",
+        "krv": "습관이 인간을 만든다",
+        "niv": "We are like chameleons, we take our hue from our habits.",
+        "themes": ["습관", "정체성", "형성"]
+      },
+      {
+        "id": 257,
+        "reference": "데이비드 흄",
+        "krv": "습관은 삶의 위대한 안내자다",
+        "niv": "Habit is the great guide of human life.",
+        "themes": ["습관", "안내", "삶"]
+      },
+      {
+        "id": 258,
+        "reference": "윌리엄 제임스",
+        "krv": "21일이면 습관이 된다",
+        "niv": "All our life is but a mass of habits.",
+        "themes": ["습관형성", "기간", "자동화"]
+      },
+      {
+        "id": 259,
+        "reference": "존 듀이",
+        "krv": "우리는 행동함으로써 배운다",
+        "niv": "We do not learn from experience, we learn from reflecting on experience.",
+        "themes": ["실천", "학습", "성찰"]
+      },
+      {
+        "id": 260,
+        "reference": "한나 아렌트",
+        "krv": "사유하는 습관이 악을 막는다",
+        "niv": "The habit of thinking is rare.",
+        "themes": ["사고습관", "성찰", "도덕"]
+      },
+      {
+        "id": 261,
+        "reference": "공자",
+        "krv": "날마다 세 번 나를 반성한다",
+        "niv": "吾日三省吾身 (I examine myself three times a day)",
+        "themes": ["성찰", "자기점검", "루틴"]
+      },
+      {
+        "id": 262,
+        "reference": "공자",
+        "krv": "배우고 때때로 익히면 기쁘지 아니한가",
+        "niv": "Is it not pleasant to learn with a constant perseverance?",
+        "themes": ["학습", "반복", "기쁨"]
+      },
+      {
+        "id": 263,
+        "reference": "공자",
+        "krv": "작은 것을 참지 못하면 큰 계획을 망친다",
+        "niv": "When anger rises, think of the consequences.",
+        "themes": ["인내", "절제", "장기계획"]
+      },
+      {
+        "id": 264,
+        "reference": "맹자",
+        "krv": "항상된 생업이 있어야 항상된 마음이 있다",
+        "niv": "A constant occupation is necessary for a constant mind.",
+        "themes": ["루틴", "안정", "마음"]
+      },
+      {
+        "id": 265,
+        "reference": "맹자",
+        "krv": "하루를 게을리하면 열흘이 부족하다",
+        "niv": "One day's neglect requires ten days to recover.",
+        "themes": ["꾸준함", "지속성", "관리"]
+      },
+      {
+        "id": 266,
+        "reference": "순자",
+        "krv": "한 걸음 한 걸음이 천 리를 만든다",
+        "niv": "A journey of a thousand miles begins with a single step.",
+        "themes": ["작은습관", "축적", "시작"]
+      },
+      {
+        "id": 267,
+        "reference": "노자",
+        "krv": "천 리 길도 한 걸음부터",
+        "niv": "The journey of a thousand miles begins with one step.",
+        "themes": ["시작", "점진성", "실천"]
+      },
+      {
+        "id": 268,
+        "reference": "노자",
+        "krv": "물은 다투지 않으면서도 이긴다",
+        "niv": "Water never waits. It changes shape and flows around things.",
+        "themes": ["유연성", "지속성", "적응"]
+      },
+      {
+        "id": 269,
+        "reference": "장자",
+        "krv": "나를 잊고 일에 몰입하라",
+        "niv": "Forget yourself in your work.",
+        "themes": ["몰입", "무아", "집중"]
+      },
+      {
+        "id": 270,
+        "reference": "장자",
+        "krv": "쓸모없음이 오히려 쓸모 있다",
+        "niv": "Uselessness is usefulness.",
+        "themes": ["여유", "본질", "관점"]
+      },
+      {
+        "id": 271,
+        "reference": "묵자",
+        "krv": "말보다 행동이 먼저다",
+        "niv": "Actions speak louder than words.",
+        "themes": ["실천", "행동", "우선순위"]
+      },
+      {
+        "id": 272,
+        "reference": "한비자",
+        "krv": "작은 구멍이 큰 제방을 무너뜨린다",
+        "niv": "A small hole can sink a great ship.",
+        "themes": ["주의", "작은습관", "예방"]
+      },
+      {
+        "id": 273,
+        "reference": "주희",
+        "krv": "아침에 경건하게 앉아 마음을 바르게 하라",
+        "niv": "Sit reverently in the morning and rectify your mind.",
+        "themes": ["아침루틴", "명상", "마음관리"]
+      },
+      {
+        "id": 274,
+        "reference": "왕양명",
+        "krv": "아는 것과 행하는 것은 하나다",
+        "niv": "Knowledge and action are one.",
+        "themes": ["지행합일", "실천", "통합"]
+      },
+      {
+        "id": 275,
+        "reference": "왕양명",
+        "krv": "매사에 양지를 실현하라",
+        "niv": "Realize innate knowledge in every affair.",
+        "themes": ["일상실천", "양심", "적용"]
+      },
+      {
+        "id": 276,
+        "reference": "불교 - 석가모니",
+        "krv": "마음이 모든 것을 이끈다",
+        "niv": "The mind is everything. What you think you become.",
+        "themes": ["마음", "사고습관", "결과"]
+      },
+      {
+        "id": 277,
+        "reference": "불교 - 석가모니",
+        "krv": "작은 방울도 채우려면 한 방울씩이다",
+        "niv": "Little by little, one walks far.",
+        "themes": ["점진성", "축적", "인내"]
+      },
+      {
+        "id": 278,
+        "reference": "불교 - 달마대사",
+        "krv": "하루 좌선하지 않으면 하루 퇴보한다",
+        "niv": "A day without meditation is a day of regression.",
+        "themes": ["명상", "루틴", "유지"]
+      },
+      {
+        "id": 279,
+        "reference": "불교 - 혜능",
+        "krv": "순간순간이 수행이다",
+        "niv": "Every moment is practice.",
+        "themes": ["현재", "수행", "일상"]
+      },
+      {
+        "id": 280,
+        "reference": "불교 - 원효",
+        "krv": "일체유심조 - 모든 것은 마음이 만든다",
+        "niv": "All phenomena are created by the mind.",
+        "themes": ["마음", "창조", "책임"]
+      },
+      {
+        "id": 281,
+        "reference": "도교 - 열자",
+        "krv": "물방울이 돌을 뚫는다",
+        "niv": "Dripping water penetrates stone.",
+        "themes": ["지속성", "인내", "힘"]
+      },
+      {
+        "id": 282,
+        "reference": "순자",
+        "krv": "배움에는 끝이 없다",
+        "niv": "Learning never exhausts the mind.",
+        "themes": ["평생학습", "성장", "지속"]
+      },
+      {
+        "id": 283,
+        "reference": "공자",
+        "krv": "온고지신 - 옛것을 익혀 새것을 안다",
+        "niv": "Review the old and learn the new.",
+        "themes": ["복습", "학습", "발전"]
+      },
+      {
+        "id": 284,
+        "reference": "맹자",
+        "krv": "하루라도 책을 읽지 않으면 입에 가시가 돋는다",
+        "niv": "If I do not read for a day, thorns grow in my mouth.",
+        "themes": ["독서", "루틴", "자기관리"]
+      },
+      {
+        "id": 285,
+        "reference": "주돈이",
+        "krv": "아침에 뜻을 세우고 저녁에 반성하라",
+        "niv": "Set your intention in the morning, reflect in the evening.",
+        "themes": ["계획", "성찰", "루틴"]
+      },
+      {
+        "id": 286,
+        "reference": "정이",
+        "krv": "경으로써 안을 곧게 하고 의로써 밖을 방정하게 하라",
+        "niv": "Maintain reverence within and righteousness without.",
+        "themes": ["내면", "외면", "균형"]
+      },
+      {
+        "id": 287,
+        "reference": "이퇴계",
+        "krv": "하루의 계획은 새벽에 있다",
+        "niv": "The day's plan lies in the dawn.",
+        "themes": ["아침", "계획", "시작"]
+      },
+      {
+        "id": 288,
+        "reference": "율곡 이이",
+        "krv": "자경문 - 스스로를 경계하라",
+        "niv": "警 - Be vigilant over yourself.",
+        "themes": ["자기경계", "경각심", "관리"]
+      },
+      {
+        "id": 289,
+        "reference": "정약용",
+        "krv": "일용지계 - 하루하루의 계획을 세워라",
+        "niv": "Make plans for each day.",
+        "themes": ["일일계획", "관리", "실천"]
+      },
+      {
+        "id": 290,
+        "reference": "퇴계",
+        "krv": "독서는 반복해서 읽는 것이다",
+        "niv": "Reading means reading repeatedly.",
+        "themes": ["반복", "독서", "숙달"]
+      },
+      {
+        "id": 291,
+        "reference": "워런 버핏",
+        "krv": "습관의 사슬은 너무 가벼워서 느껴지지 않다가, 너무 무거워져서 끊을 수 없게 된다",
+        "niv": "Chains of habit are too light to be felt until they are too heavy to be broken.",
+        "themes": ["습관", "경계", "관리"]
+      },
+      {
+        "id": 292,
+        "reference": "워런 버핏",
+        "krv": "오늘 누군가가 그늘에 앉을 수 있는 이유는 오래전 누군가가 나무를 심었기 때문이다",
+        "niv": "Someone is sitting in the shade today because someone planted a tree long ago.",
+        "themes": ["장기투자", "인내", "미래준비"]
+      },
+      {
+        "id": 293,
+        "reference": "워런 버핏",
+        "krv": "가장 좋은 투자는 자기 자신에게 하는 것이다",
+        "niv": "The best investment you can make is in yourself.",
+        "themes": ["자기투자", "학습", "성장"]
+      },
+      {
+        "id": 294,
+        "reference": "찰리 멍거",
+        "krv": "매일 조금씩 더 현명해져라",
+        "niv": "Go to bed smarter than when you woke up.",
+        "themes": ["학습", "성장", "일일습관"]
+      },
+      {
+        "id": 295,
+        "reference": "찰리 멍거",
+        "krv": "인내는 투자자의 가장 중요한 자질이다",
+        "niv": "The big money is not in the buying and selling, but in the waiting.",
+        "themes": ["인내", "장기관점", "절제"]
+      },
+      {
+        "id": 296,
+        "reference": "레이 달리오",
+        "krv": "고통과 성찰이 진보를 만든다",
+        "niv": "Pain plus reflection equals progress.",
+        "themes": ["성찰", "성장", "학습"]
+      },
+      {
+        "id": 297,
+        "reference": "레이 달리오",
+        "krv": "원칙을 세우고 따르라",
+        "niv": "Principles are ways of successfully dealing with reality.",
+        "themes": ["원칙", "체계", "일관성"]
+      },
+      {
+        "id": 298,
+        "reference": "레이 달리오",
+        "krv": "명상은 내 성공의 가장 큰 요인이다",
+        "niv": "Meditation has probably been the single most important thing in my success.",
+        "themes": ["명상", "멘탈관리", "루틴"]
+      },
+      {
+        "id": 299,
+        "reference": "존 D. 록펠러",
+        "krv": "나는 매일 아침 일찍 일어나는 습관으로 성공했다",
+        "niv": "I always tried to turn every disaster into an opportunity.",
+        "themes": ["아침습관", "기회", "태도"]
+      },
+      {
+        "id": 300,
+        "reference": "앤드류 카네기",
+        "krv": "집중은 성공의 열쇠다",
+        "niv": "The way to become rich is to put all your eggs in one basket and then watch that basket.",
+        "themes": ["집중", "전념", "관리"]
+      },
+      {
+        "id": 301,
+        "reference": "헨리 포드",
+        "krv": "습관을 주시하라, 그것이 성격이 되고 운명이 된다",
+        "niv": "Whether you think you can or think you can't, you're right.",
+        "themes": ["사고습관", "신념", "태도"]
+      },
+      {
+        "id": 302,
+        "reference": "제프 베조스",
+        "krv": "매일 첫 번째 날처럼 생각하라",
+        "niv": "It's always Day 1.",
+        "themes": ["초심", "혁신", "태도"]
+      },
+      {
+        "id": 303,
+        "reference": "제프 베조스",
+        "krv": "중요한 결정은 아침에 하라",
+        "niv": "I do my high-IQ meetings before lunch.",
+        "themes": ["시간관리", "의사결정", "에너지관리"]
+      },
+      {
+        "id": 304,
+        "reference": "일론 머스크",
+        "krv": "주당 100시간 일하면 다른 사람의 6개월을 4개월에 할 수 있다",
+        "niv": "Work like hell. I mean you just have to put in 80 to 100 hour weeks.",
+        "themes": ["노력", "시간투자", "헌신"]
+      },
+      {
+        "id": 305,
+        "reference": "일론 머스크",
+        "krv": "피드백 루프를 가능한 한 빠르게 하라",
+        "niv": "I think it's very important to have a feedback loop.",
+        "themes": ["피드백", "개선", "학습"]
+      },
+      {
+        "id": 306,
+        "reference": "빌 게이츠",
+        "krv": "나는 항상 게으른 사람을 고용한다, 그들이 쉬운 방법을 찾기 때문이다",
+        "niv": "I choose a lazy person to do a hard job. Because a lazy person will find an easy way.",
+        "themes": ["효율성", "창의성", "최적화"]
+      },
+      {
+        "id": 307,
+        "reference": "빌 게이츠",
+        "krv": "매년 책을 읽는 주간을 가진다",
+        "niv": "Reading is still the main way that I learn new things and test my understanding.",
+        "themes": ["독서", "학습", "루틴"]
+      },
+      {
+        "id": 308,
+        "reference": "마크 저커버그",
+        "krv": "아이디어는 실행되지 않으면 아무것도 아니다",
+        "niv": "Ideas don't come out fully formed. They only become clear as you work on them.",
+        "themes": ["실행", "행동", "과정"]
+      },
+      {
+        "id": 309,
+        "reference": "마크 저커버그",
+        "krv": "매일 같은 옷을 입어 의사결정 피로를 줄인다",
+        "niv": "I really want to clear my life to make it so that I have to make as few decisions as possible.",
+        "themes": ["단순화", "집중", "에너지관리"]
+      },
+      {
+        "id": 310,
+        "reference": "잭 마",
+        "krv": "오늘 열심히, 내일 더 열심히",
+        "niv": "Today is hard, tomorrow will be worse, but the day after tomorrow will be sunshine.",
+        "themes": ["인내", "지속", "희망"]
+      },
+      {
+        "id": 311,
+        "reference": "잭 마",
+        "krv": "기회는 불평하는 곳에 있다",
+        "niv": "Opportunities lie in the place where complaints are.",
+        "themes": ["기회", "관점", "문제해결"]
+      },
+      {
+        "id": 312,
+        "reference": "이건희 회장",
+        "krv": "한 우물을 파라",
+        "niv": "Dig one well deeply.",
+        "themes": ["집중", "전문성", "지속"]
+      },
+      {
+        "id": 313,
+        "reference": "이건희 회장",
+        "krv": "마누라와 자식 빼고 다 바꿔라",
+        "niv": "Change everything except your wife and children.",
+        "themes": ["변화", "혁신", "개선"]
+      },
+      {
+        "id": 314,
+        "reference": "정주영 회장",
+        "krv": "시련은 있어도 실패는 없다",
+        "niv": "There are trials, but no failures.",
+        "themes": ["인내", "회복탄력성", "태도"]
+      },
+      {
+        "id": 315,
+        "reference": "정주영 회장",
+        "krv": "해봤어? 해보기나 했어?",
+        "niv": "Have you tried? Have you even tried?",
+        "themes": ["실행", "도전", "행동"]
+      },
+      {
+        "id": 316,
+        "reference": "손정의",
+        "krv": "19살에 50년 인생계획을 세웠다",
+        "niv": "I made a 50-year life plan at age 19.",
+        "themes": ["계획", "장기목표", "비전"]
+      },
+      {
+        "id": 317,
+        "reference": "손정의",
+        "krv": "하루 5분씩이라도 미래를 생각하라",
+        "niv": "Even just 5 minutes a day, think about the future.",
+        "themes": ["미래준비", "사고습관", "전략"]
+      },
+      {
+        "id": 318,
+        "reference": "리처드 브랜슨",
+        "krv": "운동과 아침 루틴이 생산성의 2배를 만든다",
+        "niv": "Exercise and morning routine double your productivity.",
+        "themes": ["운동", "아침루틴", "생산성"]
+      },
+      {
+        "id": 319,
+        "reference": "하워드 슐츠",
+        "krv": "매일 아침 같은 시간에 일어나라",
+        "niv": "Wake up at the same time every morning.",
+        "themes": ["규칙성", "루틴", "일관성"]
+      },
+      {
+        "id": 320,
+        "reference": "팀 쿡",
+        "krv": "나는 새벽 4시 30분에 일어난다",
+        "niv": "I get up at 4:30 AM every morning.",
+        "themes": ["아침습관", "시간활용", "규율"]
+      },
+      {
+        "id": 321,
+        "reference": "벤저민 프랭클린",
+        "krv": "일찍 자고 일찍 일어나면 건강하고 부유하고 현명해진다",
+        "niv": "Early to bed and early to rise makes a man healthy, wealthy, and wise.",
+        "themes": ["수면", "건강", "성공습관"]
+      },
+      {
+        "id": 322,
+        "reference": "아리아나 허핑턴",
+        "krv": "수면은 성공의 새로운 상징이다",
+        "niv": "Sleep is the new status symbol.",
+        "themes": ["수면", "생산성", "자기관리"]
+      },
+      {
+        "id": 323,
+        "reference": "아리아나 허핑턴",
+        "krv": "성공으로 가는 길은 충분한 수면에서 시작된다",
+        "niv": "The way to a more productive, more inspired, more joyful life is getting enough sleep.",
+        "themes": ["수면", "성공", "활력"]
+      },
+      {
+        "id": 324,
+        "reference": "매튜 워커 박사",
+        "krv": "수면은 선택이 아니라 생물학적 필수다",
+        "niv": "Sleep is not optional; it's a biological necessity.",
+        "themes": ["수면과학", "건강", "필수성"]
+      },
+      {
+        "id": 325,
+        "reference": "매튜 워커 박사",
+        "krv": "밤 10시에서 새벽 2시 사이의 수면이 가장 회복력이 높다",
+        "niv": "The sleep you get before midnight is worth more than the sleep you get after.",
+        "themes": ["수면시간", "회복", "골든타임"]
+      },
+      {
+        "id": 326,
+        "reference": "동양 의학",
+        "krv": "자시(밤 11시~새벽 1시)는 간의 해독 시간이다",
+        "niv": "The hours between 11 PM and 1 AM are crucial for liver detoxification.",
+        "themes": ["건강", "해독", "생체리듬"]
+      },
+      {
+        "id": 327,
+        "reference": "수면 과학",
+        "krv": "일정한 취침 시간이 일정한 기상 시간보다 중요하다",
+        "niv": "A consistent bedtime is more important than a consistent wake time.",
+        "themes": ["규칙성", "생체리듬", "수면습관"]
+      },
+      {
+        "id": 328,
+        "reference": "제프 베조스",
+        "krv": "나는 8시간 수면을 우선순위에 둔다",
+        "niv": "Eight hours of sleep makes a big difference for me, and I try hard to make that a priority.",
+        "themes": ["수면우선순위", "의사결정", "생산성"]
+      },
+      {
+        "id": 329,
+        "reference": "빌 게이츠",
+        "krv": "젊었을 때 수면을 무시했던 것을 후회한다",
+        "niv": "I used to think sleep was a waste of time, but I've learned it's actually essential.",
+        "themes": ["수면의가치", "성찰", "건강"]
+      },
+      {
+        "id": 330,
+        "reference": "한의학 격언",
+        "krv": "해가 지면 쉬고 해가 뜨면 일어나라",
+        "niv": "Rest when the sun sets, rise when the sun rises.",
+        "themes": ["자연리듬", "조화", "건강"]
+      },
+      {
+        "id": 331,
+        "reference": "데일 카네기",
+        "krv": "사람들의 이름을 기억하라, 그것이 그들에게 가장 달콤한 소리다",
+        "niv": "A person's name is to that person the sweetest sound in any language.",
+        "themes": ["관심", "존중", "기억"]
+      },
+      {
+        "id": 332,
+        "reference": "데일 카네기",
+        "krv": "비판 대신 이해하려 노력하라",
+        "niv": "Any fool can criticize, but it takes character to be understanding.",
+        "themes": ["이해", "공감", "태도"]
+      },
+      {
+        "id": 333,
+        "reference": "데일 카네기",
+        "krv": "진심으로 관심을 가져라",
+        "niv": "You can make more friends in two months by being interested in them than in two years by trying to get them interested in you.",
+        "themes": ["관심", "경청", "우선순위"]
+      },
+      {
+        "id": 334,
+        "reference": "스티븐 코비",
+        "krv": "먼저 이해하고 다음에 이해받으려 하라",
+        "niv": "Seek first to understand, then to be understood.",
+        "themes": ["경청", "이해", "소통"]
+      },
+      {
+        "id": 335,
+        "reference": "스티븐 코비",
+        "krv": "신뢰 계좌에 꾸준히 입금하라",
+        "niv": "Make deposits in the emotional bank account.",
+        "themes": ["신뢰", "관계투자", "축적"]
+      },
+      {
+        "id": 336,
+        "reference": "마야 안젤루",
+        "krv": "사람들은 당신이 한 말이나 행동보다 느낌을 기억한다",
+        "niv": "People will forget what you said, but they will never forget how you made them feel.",
+        "themes": ["감정", "영향", "기억"]
+      },
+      {
+        "id": 337,
+        "reference": "공자",
+        "krv": "자기가 원하지 않는 것을 남에게 베풀지 말라",
+        "niv": "Do not do to others what you do not want done to yourself.",
+        "themes": ["황금률", "배려", "역지사지"]
+      },
+      {
+        "id": 338,
+        "reference": "공자",
+        "krv": "벗이 먼 곳에서 찾아오니 또한 즐겁지 아니한가",
+        "niv": "Is it not a joy to have friends come from afar?",
+        "themes": ["우정", "만남", "기쁨"]
+      },
+      {
+        "id": 339,
+        "reference": "노자",
+        "krv": "강한 사람은 남을 이기지만 현명한 사람은 자신을 이긴다",
+        "niv": "Knowing others is intelligence; knowing yourself is true wisdom.",
+        "themes": ["자기인식", "겸손", "지혜"]
+      },
+      {
+        "id": 340,
+        "reference": "아리스토텔레스",
+        "krv": "친구는 하나의 영혼이 두 몸에 깃든 것이다",
+        "niv": "What is a friend? A single soul dwelling in two bodies.",
+        "themes": ["우정", "연결", "친밀감"]
+      },
+      {
+        "id": 341,
+        "reference": "소크라테스",
+        "krv": "말하기 전에 세 가지를 생각하라: 진실인가, 선한가, 필요한가",
+        "niv": "Before you speak, ask yourself: Is it true? Is it kind? Is it necessary?",
+        "themes": ["말습관", "신중함", "배려"]
+      },
+      {
+        "id": 342,
+        "reference": "에픽테토스",
+        "krv": "우리에게는 두 개의 귀와 하나의 입이 있다, 말하기보다 두 배로 들으라는 뜻이다",
+        "niv": "We have two ears and one mouth so we can listen twice as much as we speak.",
+        "themes": ["경청", "균형", "지혜"]
+      },
+      {
+        "id": 343,
+        "reference": "마르쿠스 아우렐리우스",
+        "krv": "다른 사람의 잘못에 시간을 쓰지 말고 자신을 돌아보라",
+        "niv": "The best revenge is to be unlike him who performed the injury.",
+        "themes": ["자기성찰", "용서", "성장"]
+      },
+      {
+        "id": 344,
+        "reference": "브레네 브라운",
+        "krv": "취약함을 드러내는 용기가 진정한 연결을 만든다",
+        "niv": "Vulnerability is the birthplace of connection.",
+        "themes": ["진정성", "용기", "친밀감"]
+      },
+      {
+        "id": 345,
+        "reference": "브레네 브라운",
+        "krv": "경계선은 관계를 끊는 것이 아니라 건강하게 만든다",
+        "niv": "Daring to set boundaries is about having the courage to love ourselves.",
+        "themes": ["경계", "자기사랑", "건강한관계"]
+      },
+      {
+        "id": 346,
+        "reference": "마샬 로젠버그",
+        "krv": "모든 비판 뒤에는 충족되지 않은 욕구가 있다",
+        "niv": "Behind every criticism is an unmet need.",
+        "themes": ["이해", "욕구", "공감"]
+      },
+      {
+        "id": 347,
+        "reference": "마샬 로젠버그",
+        "krv": "관찰과 평가를 분리하라",
+        "niv": "Observe without evaluating.",
+        "themes": ["객관성", "비판단", "소통"]
+      },
+      {
+        "id": 348,
+        "reference": "칼 로저스",
+        "krv": "진정으로 듣는다는 것은 임시로 자신을 제쳐두는 것이다",
+        "niv": "When someone really hears you without judgment, it feels damn good.",
+        "themes": ["경청", "공감", "현존"]
+      },
+      {
+        "id": 349,
+        "reference": "게리 채프먼",
+        "krv": "상대의 사랑의 언어로 말하라",
+        "niv": "We must be willing to learn our spouse's primary love language.",
+        "themes": ["이해", "맞춤", "표현"]
+      },
+      {
+        "id": 350,
+        "reference": "존 고트먼",
+        "krv": "작은 일상의 연결이 관계를 만든다",
+        "niv": "Small things often: that's the secret.",
+        "themes": ["일상", "작은관심", "축적"]
+      },
+      {
+        "id": 351,
+        "reference": "존 고트먼",
+        "krv": "갈등이 문제가 아니라 다루는 방식이 문제다",
+        "niv": "It's not the presence of conflict that's the problem, it's how you handle it.",
+        "themes": ["갈등관리", "방법", "성숙함"]
+      },
+      {
+        "id": 352,
+        "reference": "톨스토이",
+        "krv": "행복한 가정은 모두 비슷하지만 불행한 가정은 각기 다르다",
+        "niv": "All happy families are alike; each unhappy family is unhappy in its own way.",
+        "themes": ["관계", "패턴", "행복"]
+      },
+      {
+        "id": 353,
+        "reference": "칼릴 지브란",
+        "krv": "함께 있되 거리를 두라",
+        "niv": "Let there be spaces in your togetherness.",
+        "themes": ["독립성", "균형", "존중"]
+      },
+      {
+        "id": 354,
+        "reference": "랄프 왈도 에머슨",
+        "krv": "친구를 얻는 유일한 방법은 스스로 친구가 되는 것이다",
+        "niv": "The only way to have a friend is to be one.",
+        "themes": ["상호성", "주도성", "우정"]
+      },
+      {
+        "id": 355,
+        "reference": "헨리 데이비드 소로",
+        "krv": "가장 위대한 선물은 관심을 주는 것이다",
+        "niv": "The greatest gift is a portion of thyself.",
+        "themes": ["관심", "현존", "선물"]
+      },
+      {
+        "id": 356,
+        "reference": "알베르 카뮈",
+        "krv": "우정을 유지하지 못한다면 인간이 아니다",
+        "niv": "Don't walk in front of me, I may not follow. Walk beside me and be my friend.",
+        "themes": ["동행", "평등", "우정"]
+      },
+      {
+        "id": 357,
+        "reference": "빅터 프랭클",
+        "krv": "자극과 반응 사이에 공간이 있다",
+        "niv": "Between stimulus and response there is a space. In that space is our power to choose.",
+        "themes": ["선택", "반응", "성숙함"]
+      },
+      {
+        "id": 358,
+        "reference": "달라이 라마",
+        "krv": "친절하라, 가능하다면 언제나",
+        "niv": "Be kind whenever possible. It is always possible.",
+        "themes": ["친절", "선택", "일관성"]
+      },
+      {
+        "id": 359,
+        "reference": "마더 테레사",
+        "krv": "친절한 말은 짧고 쉬워도 그 메아리는 영원하다",
+        "niv": "Kind words can be short and easy to speak, but their echoes are truly endless.",
+        "themes": ["말의힘", "친절", "영향"]
+      },
+      {
+        "id": 360,
+        "reference": "벤저민 프랭클린",
+        "krv": "작은 친절과 작은 사랑의 행위가 세상을 평화롭게 한다",
+        "niv": "Little strokes fell great oaks.",
+        "themes": ["작은행동", "축적", "영향력"]
+      },
+      {
+        "id": 361,
+        "reference": "맹자",
+        "krv": "사람을 사귀되 그 친구를 보라",
+        "niv": "When making friends, observe their companions.",
+        "themes": ["분별", "영향", "선택"]
+      },
+      {
+        "id": 362,
+        "reference": "순자",
+        "krv": "벗과 함께하면 즐거움이 배가 된다",
+        "niv": "Joy shared is joy doubled.",
+        "themes": ["공유", "기쁨", "우정"]
+      },
+      {
+        "id": 363,
+        "reference": "법정 스님",
+        "krv": "무소유가 진정한 만남을 가능하게 한다",
+        "niv": "Only when we possess nothing can we truly meet.",
+        "themes": ["비움", "진정성", "만남"]
+      },
+      {
+        "id": 364,
+        "reference": "틱낫한",
+        "krv": "진정한 사랑은 이해에서 태어난다",
+        "niv": "Understanding is love's other name.",
+        "themes": ["이해", "사랑", "공감"]
+      },
+      {
+        "id": 365,
+        "reference": "C.S. 루이스",
+        "krv": "우정은 불필요하지만 철학처럼 가치가 없는 것은 아니다",
+        "niv": "Friendship is unnecessary, like philosophy, like art. It has no survival value; rather it is one of those things which give value to survival.",
+        "themes": ["우정의가치", "의미", "삶의질"]
       }
 
   ]

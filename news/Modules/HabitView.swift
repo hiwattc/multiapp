@@ -8,15 +8,45 @@ struct Habit: Codable, Identifiable {
     let id: UUID
     var title: String
     var completions: [String: Bool] // "yyyy-MM-dd": true/false
-    var reminderTime: Date? // 알림 시간
-    var isReminderEnabled: Bool // 알림 활성화 여부
+    var reminderTimes: [Date] // 여러 개의 알림 시간
 
-    init(id: UUID = UUID(), title: String, completions: [String: Bool] = [:], reminderTime: Date? = nil, isReminderEnabled: Bool = false) {
+    init(id: UUID = UUID(), title: String, completions: [String: Bool] = [:], reminderTimes: [Date] = []) {
         self.id = id
         self.title = title
         self.completions = completions
-        self.reminderTime = reminderTime
-        self.isReminderEnabled = isReminderEnabled
+        self.reminderTimes = reminderTimes
+    }
+    
+    // 기존 데이터 마이그레이션을 위한 커스텀 디코더
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        completions = try container.decode([String: Bool].self, forKey: .completions)
+        
+        // 기존 reminderTime과 isReminderEnabled를 reminderTimes로 변환
+        if let oldReminderTime = try? container.decodeIfPresent(Date.self, forKey: .oldReminderTime),
+           let oldIsEnabled = try? container.decodeIfPresent(Bool.self, forKey: .oldIsReminderEnabled),
+           oldIsEnabled {
+            reminderTimes = [oldReminderTime]
+        } else {
+            reminderTimes = (try? container.decode([Date].self, forKey: .reminderTimes)) ?? []
+        }
+    }
+    
+    // 커스텀 인코더
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(completions, forKey: .completions)
+        try container.encode(reminderTimes, forKey: .reminderTimes)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, completions, reminderTimes
+        case oldReminderTime = "reminderTime"
+        case oldIsReminderEnabled = "isReminderEnabled"
     }
 }
 
@@ -43,22 +73,9 @@ class HabitViewModel: ObservableObject {
     @Published var newHabitTitle = ""
     @Published var scrollToToday = false
     @Published var isTextFieldFocused = false
-
-    // 명언 데이터
-    var bibleVerses: [BibleVerse] {
-        [
-            BibleVerse(id: 1, reference: "잠언 21:5", krv: "부지런한 자의 경영은 풍부함에 이르거니와", niv: "The plans of the diligent lead to profit.", themes: ["계획", "부지런함"]),
-            BibleVerse(id: 2, reference: "고린도전서 9:27", krv: "내 몸을 쳐 복종하게 함은", niv: "I discipline my body and keep it under control.", themes: ["절제", "자기관리"]),
-            BibleVerse(id: 3, reference: "잠언 16:3", krv: "너의 행사를 여호와께 맡기라", niv: "Commit to the Lord whatever you do.", themes: ["계획", "신뢰"]),
-            BibleVerse(id: 4, reference: "갈라디아서 6:9", krv: "선한 일을 행하다가 낙심하지 말지니", niv: "Let us not become weary in doing good.", themes: ["지속", "인내"]),
-            BibleVerse(id: 5, reference: "잠언 4:23", krv: "무릇 지킬만한 것보다 네 마음을 지키라", niv: "Above all else, guard your heart.", themes: ["멘탈관리", "자기통제"]),
-            BibleVerse(id: 6, reference: "전도서 9:10", krv: "무엇이든지 손이 할 일을 힘을 다하여 할지니", niv: "Whatever your hand finds to do, do it with all your might.", themes: ["몰입", "태도"]),
-            BibleVerse(id: 7, reference: "시편 119:105", krv: "주의 말씀은 내 발에 등이요", niv: "Your word is a lamp for my feet.", themes: ["방향성", "삶의 기준"]),
-            BibleVerse(id: 8, reference: "잠언 13:4", krv: "부지런한 자의 영혼은 풍족함을 얻느니라", niv: "The diligent are fully satisfied.", themes: ["부지런함", "보상"]),
-            BibleVerse(id: 9, reference: "잠언 24:27", krv: "일을 밖에 정리하고 밭에 준비하라", niv: "Finish your outdoor work and get your fields ready.", themes: ["준비", "계획"]),
-            BibleVerse(id: 10, reference: "마태복음 6:33", krv: "먼저 그의 나라와 그의 의를 구하라", niv: "Seek first his kingdom and his righteousness.", themes: ["우선순위", "신뢰"])
-        ]
-    }
+    
+    // 명언 데이터 (JSON에서 로드)
+    @Published var bibleVerses: [BibleVerse] = []
 
     private let saveKey = "SavedHabits"
     private let appGroupID = "group.com.news.habit"
@@ -69,6 +86,7 @@ class HabitViewModel: ObservableObject {
 
     init() {
         loadHabits()
+        loadBibleVerses()
         // 앱 시작 시 모든 습관 알림 스케줄링
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.scheduleAllHabitReminders()
@@ -135,8 +153,8 @@ class HabitViewModel: ObservableObject {
         }
     }
 
-    // 습관 알림 설정
-    func setHabitReminder(_ habit: Habit, time: Date) async {
+    // 습관 알림 추가
+    func addHabitReminder(_ habit: Habit, time: Date) async {
         guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
 
         // 알림 권한 확인 및 요청
@@ -146,88 +164,123 @@ class HabitViewModel: ObservableObject {
             return
         }
 
-        // 습관 알림 설정
-        habits[index].reminderTime = time
-        habits[index].isReminderEnabled = true
-        saveHabits()
-
-        // 알림 스케줄링
-        scheduleHabitReminder(habit, time: time)
-
-        print("✅ \(habit.title) 알림 설정됨: \(time.formatted(date: .omitted, time: .shortened))")
+        // 중복 시간 체크 (분 단위까지)
+        let calendar = Calendar.current
+        let newComponents = calendar.dateComponents([.hour, .minute], from: time)
+        
+        let isDuplicate = habits[index].reminderTimes.contains { existingTime in
+            let existingComponents = calendar.dateComponents([.hour, .minute], from: existingTime)
+            return newComponents.hour == existingComponents.hour && 
+                   newComponents.minute == existingComponents.minute
+        }
+        
+        if !isDuplicate {
+            habits[index].reminderTimes.append(time)
+            habits[index].reminderTimes.sort() // 시간순 정렬
+            saveHabits()
+            
+            // 알림 스케줄링
+            scheduleHabitReminder(habit, time: time)
+            
+            print("✅ \(habit.title) 알림 추가됨: \(time.formatted(date: .omitted, time: .shortened))")
+        }
     }
 
-    // 습관 알림 해제
-    func removeHabitReminder(_ habit: Habit) {
+    // 습관 알림 삭제 (특정 시간)
+    func removeHabitReminder(_ habit: Habit, time: Date) {
         guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
 
-        habits[index].reminderTime = nil
-        habits[index].isReminderEnabled = false
+        let calendar = Calendar.current
+        let targetComponents = calendar.dateComponents([.hour, .minute], from: time)
+        
+        habits[index].reminderTimes.removeAll { existingTime in
+            let existingComponents = calendar.dateComponents([.hour, .minute], from: existingTime)
+            return targetComponents.hour == existingComponents.hour && 
+                   targetComponents.minute == existingComponents.minute
+        }
         saveHabits()
 
-        // 기존 알림 취소
-        cancelHabitReminder(habit)
+        // 특정 알림 취소
+        cancelHabitReminder(habit, time: time)
 
-        print("❌ \(habit.title) 알림 해제됨")
+        print("❌ \(habit.title) 알림 삭제됨: \(time.formatted(date: .omitted, time: .shortened))")
+    }
+    
+    // 모든 알림 삭제
+    func removeAllHabitReminders(_ habit: Habit) {
+        guard let index = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+
+        habits[index].reminderTimes.removeAll()
+        saveHabits()
+
+        // 모든 알림 취소
+        cancelAllHabitReminders(habit)
+
+        print("❌ \(habit.title) 모든 알림 삭제됨")
     }
 
-    // 알림 스케줄링
+    // 알림 스케줄링 (특정 시간)
     private func scheduleHabitReminder(_ habit: Habit, time: Date) {
         let center = UNUserNotificationCenter.current()
 
-        // 기존 알림 취소
-        cancelHabitReminder(habit)
-
-        // 오늘의 알림 시간 계산
+        // 시간 식별자 생성 (HH:mm 형식)
         let calendar = Calendar.current
-        let now = Date()
-        var components = calendar.dateComponents([.year, .month, .day], from: now)
         let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
-
-        components.hour = timeComponents.hour
-        components.minute = timeComponents.minute
-
-        guard let reminderDate = calendar.date(from: components) else { return }
-
-        // 이미 지난 시간이면 내일로 설정
-        let finalDate = reminderDate > now ? reminderDate : calendar.date(byAdding: .day, value: 1, to: reminderDate)!
-
+        let timeIdentifier = String(format: "%02d:%02d", timeComponents.hour ?? 0, timeComponents.minute ?? 0)
+        
         let content = UNMutableNotificationContent()
         content.title = "습관 알림"
         content.body = "'\(habit.title)' 습관을 체크하세요!"
         content.sound = .default
         content.badge = 1
 
-        let componentsForTrigger = calendar.dateComponents([.hour, .minute], from: finalDate)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: componentsForTrigger, repeats: true)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: timeComponents, repeats: true)
 
-        let request = UNNotificationRequest(identifier: "habit-\(habit.id.uuidString)", content: content, trigger: trigger)
+        let identifier = "habit-\(habit.id.uuidString)-\(timeIdentifier)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
         center.add(request) { error in
             if let error = error {
                 print("알림 스케줄링 실패: \(error.localizedDescription)")
+            } else {
+                print("📅 알림 스케줄링 성공: \(identifier)")
             }
         }
     }
 
-    // 알림 취소
-    private func cancelHabitReminder(_ habit: Habit) {
+    // 알림 취소 (특정 시간)
+    private func cancelHabitReminder(_ habit: Habit, time: Date) {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["habit-\(habit.id.uuidString)"])
+        let calendar = Calendar.current
+        let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+        let timeIdentifier = String(format: "%02d:%02d", timeComponents.hour ?? 0, timeComponents.minute ?? 0)
+        
+        let identifier = "habit-\(habit.id.uuidString)-\(timeIdentifier)"
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+        print("🗑️ 알림 취소됨: \(identifier)")
+    }
+    
+    // 모든 알림 취소
+    private func cancelAllHabitReminders(_ habit: Habit) {
+        let center = UNUserNotificationCenter.current()
+        
+        // 해당 습관의 모든 알림 identifier 패턴 찾기
+        center.getPendingNotificationRequests { requests in
+            let habitPrefix = "habit-\(habit.id.uuidString)-"
+            let identifiersToRemove = requests
+                .map { $0.identifier }
+                .filter { $0.hasPrefix(habitPrefix) }
+            
+            center.removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
+            print("🗑️ 모든 알림 취소됨: \(identifiersToRemove.count)개")
+        }
     }
 
     // 모든 습관에 대한 알림 스케줄링 (앱 시작 시 호출)
     func scheduleAllHabitReminders() {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let todayString = String(format: "%04d-%02d-%02d",
-                                calendar.component(.year, from: today),
-                                calendar.component(.month, from: today),
-                                calendar.component(.day, from: today))
-
-        for habit in habits where habit.isReminderEnabled {
-            if let reminderTime = habit.reminderTime {
-                // 습관 완료 여부와 상관없이 모든 습관에 대해 매일 알림 스케줄링
+        for habit in habits {
+            // 등록된 모든 알림 시간에 대해 스케줄링
+            for reminderTime in habit.reminderTimes {
                 scheduleHabitReminder(habit, time: reminderTime)
             }
         }
@@ -311,49 +364,70 @@ class HabitViewModel: ObservableObject {
             habits = decoded
         }
     }
+    
+    // JSON 파일에서 명언 데이터 로드
+    private func loadBibleVerses() {
+        guard let url = Bundle.main.url(forResource: "HabitAdvice", withExtension: "json") else {
+            print("⚠️ HabitAdvice.json 파일을 찾을 수 없습니다")
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let advice = try JSONDecoder().decode(HabitAdvice.self, from: data)
+            bibleVerses = advice.bibleVersesForHabits
+            print("✅ 명언 데이터 로드 성공: \(bibleVerses.count)개")
+        } catch {
+            print("❌ 명언 데이터 로드 실패: \(error.localizedDescription)")
+        }
+    }
 }
 
 // MARK: - Marquee Text Component
 struct MarqueeText: View {
     let text: String
     let reference: String
-    let onRefresh: () -> Void
+    let onShowMore: () -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            HStack(spacing: 8) {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.yellow)
-                    .font(.callout)
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "lightbulb.fill")
+                .foregroundColor(.yellow)
+                .font(.callout)
+                .padding(.top, 2)
 
+            VStack(alignment: .leading, spacing: 4) {
                 Text(text)
                     .font(.callout)
                     .foregroundColor(.primary)
-                    .lineLimit(1)
+                    .lineLimit(nil)  // 제한 없이 모든 텍스트 표시
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .onTapGesture {
-                        onRefresh()
-                    }
-
-                Spacer(minLength: 4)
-
-                VStack(alignment: .trailing, spacing: 0) {
+                
+                HStack {
                     Text(reference)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                         .fontWeight(.medium)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-
-                    Button(action: onRefresh) {
-                        Image(systemName: "arrow.clockwise")
-                            .foregroundColor(.blue)
-                            .font(.callout)
+                    
+                    Spacer()
+                    
+                    Button(action: onShowMore) {
+                        HStack(spacing: 2) {
+                            Text("더보기")
+                                .font(.caption)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.blue)
                     }
                 }
-                .frame(width: 60, alignment: .trailing)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(8)
     }
 }
 
@@ -379,12 +453,11 @@ let recommendedHabits = [
 struct HabitView: View {
     @ObservedObject var viewModel: HabitViewModel
     @FocusState private var isTextFieldFocused: Bool
-    @State private var editMode: EditMode = .inactive
     @State private var showingDeleteConfirmation = false
     @State private var habitToDelete: Habit?
+    @State private var showingQuoteList = false
 
     // Inspiration Quote State
-    @State private var bibleVerses: [BibleVerse] = []
     @State private var selectedVerse: BibleVerse?
 
 
@@ -403,16 +476,18 @@ struct HabitView: View {
 
                 // Inspiration Quote Section
                 if let verse = selectedVerse {
-                    MarqueeText(text: verse.krv, reference: verse.reference, onRefresh: selectRandomVerse)
-                        .frame(height: 32)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                    MarqueeText(text: verse.krv, reference: verse.reference, onShowMore: {
+                        showingQuoteList = true
+                    })
                         .padding(.horizontal)
-                        .padding(.top, 4)
+                        .padding(.top, 16)
+                        .padding(.bottom, 8)
+                        .transition(.opacity.combined(with: .scale))
                 }
 
                 // Add Habit Section
                 addHabitSection
+                    .padding(.top, 8)
 
                 // Recommended Habits Section
                 if isTextFieldFocused {
@@ -427,50 +502,8 @@ struct HabitView: View {
                 }
             }
             .onAppear {
-                // Load inspiration quotes when view appears
-                if bibleVerses.isEmpty {
-                    bibleVerses = [
-                        BibleVerse(id: 1, reference: "잠언 21:5", krv: "부지런한 자의 경영은 풍부함에 이르거니와", niv: "The plans of the diligent lead to profit.", themes: ["계획", "부지런함"]),
-                        BibleVerse(id: 2, reference: "고린도전서 9:27", krv: "내 몸을 쳐 복종하게 함은", niv: "I discipline my body and keep it under control.", themes: ["절제", "자기관리"]),
-                        BibleVerse(id: 3, reference: "잠언 16:3", krv: "너의 행사를 여호와께 맡기라", niv: "Commit to the Lord whatever you do.", themes: ["계획", "신뢰"]),
-                        BibleVerse(id: 4, reference: "갈라디아서 6:9", krv: "선한 일을 행하다가 낙심하지 말지니", niv: "Let us not become weary in doing good.", themes: ["지속", "인내"]),
-                        BibleVerse(id: 5, reference: "로마서 12:2", krv: "마음을 새롭게 함으로 변화를 받으라", niv: "Be transformed by the renewing of your mind.", themes: ["사고습관", "성찰"]),
-                        BibleVerse(id: 6, reference: "잠언 4:23", krv: "무릇 지킬만한 것보다 네 마음을 지키라", niv: "Above all else, guard your heart.", themes: ["멘탈관리", "자기통제"]),
-                        BibleVerse(id: 7, reference: "전도서 9:10", krv: "무엇이든지 손이 할 일을 힘을 다하여 할지니", niv: "Whatever your hand finds to do, do it with all your might.", themes: ["몰입", "태도"]),
-                        BibleVerse(id: 8, reference: "시편 119:105", krv: "주의 말씀은 내 발에 등이요", niv: "Your word is a lamp for my feet.", themes: ["방향성", "삶의 기준"]),
-                        BibleVerse(id: 9, reference: "잠언 13:4", krv: "부지런한 자의 영혼은 풍족함을 얻느니라", niv: "The diligent are fully satisfied.", themes: ["부지런함", "보상"]),
-                        BibleVerse(id: 10, reference: "마태복음 25:21", krv: "지극히 작은 것에 충성하였으매", niv: "You have been faithful with a few things.", themes: ["작은습관", "충성"]),
-                        BibleVerse(id: 11, reference: "야고보서 1:22", krv: "너희는 말씀을 행하는 자가 되라", niv: "Do not merely listen to the word, and so deceive yourselves.", themes: ["실천", "행동"]),
-                        BibleVerse(id: 12, reference: "디모데전서 4:7", krv: "경건에 이르도록 네 자신을 연단하라", niv: "Train yourself to be godly.", themes: ["훈련", "자기연단"]),
-                        BibleVerse(id: 13, reference: "잠언 6:6", krv: "개미에게 가서 그 부지런함을 보라", niv: "Go to the ant, you sluggard; consider its ways.", themes: ["근면", "자기학습"]),
-                        BibleVerse(id: 14, reference: "시편 37:5", krv: "너의 길을 여호와께 맡기라", niv: "Commit your way to the Lord.", themes: ["의지", "신뢰"]),
-                        BibleVerse(id: 15, reference: "잠언 12:1", krv: "훈계를 좋아하는 자는 지식을 좋아하느니라", niv: "Whoever loves discipline loves knowledge.", themes: ["훈계", "성장"]),
-                        BibleVerse(id: 16, reference: "빌립보서 3:14", krv: "표 때를 향하여 달려가노라", niv: "I press on toward the goal.", themes: ["목표", "집중"]),
-                        BibleVerse(id: 17, reference: "시편 90:12", krv: "우리에게 우리 날 계수함을 가르치사", niv: "Teach us to number our days.", themes: ["시간관리", "지혜"]),
-                        BibleVerse(id: 18, reference: "골로새서 3:23", krv: "무슨 일을 하든지 마음을 다하여 주께 하듯", niv: "Whatever you do, work at it with all your heart.", themes: ["태도", "책임"]),
-                        BibleVerse(id: 19, reference: "히브리서 12:11", krv: "연단은 슬퍼 보이나", niv: "No discipline seems pleasant at the time.", themes: ["훈련", "인내"]),
-                        BibleVerse(id: 20, reference: "잠언 20:11", krv: "비록 아이라도 그 행실로 말미암아", niv: "Even children are known by the way they act.", themes: ["행동습관", "성품"]),
-                        BibleVerse(id: 21, reference: "벤저민 프랭클린", krv: "계획 없는 삶은 실패다", niv: "Failing to plan is planning to fail.", themes: ["계획", "기록", "자기관리"]),
-                        BibleVerse(id: 22, reference: "아리스토텔레스", krv: "습관이 곧 인간이다", niv: "We are what we repeatedly do.", themes: ["습관형성", "철학", "반복"]),
-                        BibleVerse(id: 23, reference: "공자", krv: "날마다 자신을 반성하라", niv: "吾日三省吾身", themes: ["성찰", "자기점검"]),
-                        BibleVerse(id: 24, reference: "마르쿠스 아우렐리우스", krv: "생각이 인생을 만든다", niv: "Our life is what our thoughts make it.", themes: ["멘탈관리", "기록", "사고습관"]),
-                        BibleVerse(id: 25, reference: "아이작 뉴턴", krv: "집중이 발견을 낳는다", niv: "If I have seen further, it is by standing on the shoulders of giants.", themes: ["집중", "연구", "몰입"]),
-                        BibleVerse(id: 26, reference: "찰스 다윈", krv: "지속이 진화를 만든다", niv: "The most responsive to change survives.", themes: ["지속성", "관찰", "루틴"]),
-                        BibleVerse(id: 27, reference: "니콜라 테슬라", krv: "상상은 현실이 된다", niv: "The present is theirs; the future is mine.", themes: ["창의성", "시각화"]),
-                        BibleVerse(id: 28, reference: "마리 퀴리", krv: "두려움은 극복된다", niv: "Nothing in life is to be feared, it is only to be understood.", themes: ["학습", "멘탈관리", "용기"]),
-                        BibleVerse(id: 29, reference: "어니스트 헤밍웨이", krv: "매일 써라", niv: "Write drunk, edit sober.", themes: ["글쓰기", "루틴", "실천"]),
-                        BibleVerse(id: 30, reference: "무라카미 하루키", krv: "계속 달리고 쓴다", niv: "I write every day and run every day.", themes: ["운동", "창작", "루틴"]),
-                        BibleVerse(id: 31, reference: "베토벤", krv: "규칙이 자유를 만든다", niv: "Music is a higher revelation than philosophy.", themes: ["규칙", "창작", "집중"]),
-                        BibleVerse(id: 32, reference: "빈센트 반 고흐", krv: "고통 속에 예술이 있다", niv: "I dream my painting and paint my dream.", themes: ["감정관리", "예술", "표현"]),
-                        BibleVerse(id: 33, reference: "스티브 잡스", krv: "단순함은 궁극의 정교함", niv: "Simplicity is the ultimate sophistication.", themes: ["미니멀리즘", "의사결정"]),
-                        BibleVerse(id: 34, reference: "일론 머스크", krv: "시간은 가장 귀하다", niv: "I work like hell.", themes: ["시간관리", "생산성"]),
-                        BibleVerse(id: 35, reference: "제프 베조스", krv: "장기적으로 생각하라", niv: "Be stubborn on vision, flexible on details.", themes: ["비전", "의사결정"]),
-                        BibleVerse(id: 36, reference: "워런 버핏", krv: "읽고 또 읽어라", niv: "The best investment you can make is in yourself.", themes: ["독서", "자기계발"]),
-                        BibleVerse(id: 37, reference: "마이클 조던", krv: "실패가 성공을 만든다", niv: "I’ve failed over and over again, and that is why I succeed.", themes: ["훈련", "성장", "회복탄력성"]),
-                        BibleVerse(id: 38, reference: "코비 브라이언트", krv: "노력은 배신하지 않는다", niv: "The moment you give up is the moment you let someone else win.", themes: ["멘탈", "훈련", "집중"]),
-                        BibleVerse(id: 39, reference: "크리스티아누 호날두", krv: "재능은 관리된다", niv: "Talent without hard work is nothing.", themes: ["자기관리", "건강", "절제"]),
-                        BibleVerse(id: 40, reference: "타이거 우즈", krv: "연습이 차이를 만든다", niv: "You can always get better.", themes: ["연습", "멘탈관리"])
-                    ]
+                // 명언 데이터가 로드되면 랜덤 선택
+                if selectedVerse == nil && !viewModel.bibleVerses.isEmpty {
                     selectRandomVerse()
                 }
             }
@@ -492,6 +525,9 @@ struct HabitView: View {
             if let habit = habitToDelete {
                 Text("'\(habit.title)' 습관을 정말 삭제하시겠습니까?\n삭제된 습관의 모든 기록이 사라집니다.")
             }
+        }
+        .sheet(isPresented: $showingQuoteList) {
+            QuoteListView(quotes: viewModel.bibleVerses)
         }
     }
 
@@ -524,20 +560,6 @@ struct HabitView: View {
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(12)
                 }
-
-                Button(action: {
-                    withAnimation {
-                        editMode = editMode == .active ? .inactive : .active
-                    }
-                }) {
-                    Text(editMode == .active ? "완료" : "순서편집")
-                        .font(.caption)
-                        .foregroundColor(editMode == .active ? .green : .orange)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background((editMode == .active ? Color.green : Color.orange).opacity(0.1))
-                        .cornerRadius(12)
-                }
             }
 
             Spacer()
@@ -557,7 +579,7 @@ struct HabitView: View {
     }
 
     private var addHabitSection: some View {
-        HStack {
+        HStack(spacing: 0) {
             TextField(habitPlaceholder, text: $viewModel.newHabitTitle)
                 .focused($isTextFieldFocused)
                 .submitLabel(.done)
@@ -565,20 +587,23 @@ struct HabitView: View {
                     viewModel.addHabit()
                     viewModel.isTextFieldFocused = false
                 }
-                .padding(12)
-                .background(Color(UIColor.tertiarySystemGroupedBackground))
-                .cornerRadius(12)
-
+                .padding(.leading, 16)
+                .padding(.trailing, 50)  // 버튼 공간 확보
+                .padding(.vertical, 14)
+            
             Button(action: {
                 viewModel.addHabit()
                 viewModel.isTextFieldFocused = false
             }) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 32))
+                    .font(.system(size: 28))
                     .foregroundColor(.blue)
             }
+            .padding(.trailing, 12)
         }
-        .padding()
+        .background(Color(UIColor.tertiarySystemGroupedBackground))
+        .cornerRadius(12)
+        .padding(.horizontal)
     }
 
     private var emptyStateView: some View {
@@ -600,7 +625,7 @@ struct HabitView: View {
     private var habitsScrollView: some View {
         List {
                 ForEach(viewModel.habits) { habit in
-                HabitRow(habit: habit, viewModel: viewModel, editMode: $editMode)
+                HabitRow(habit: habit, viewModel: viewModel)
                 }
             .onMove(perform: viewModel.reorderHabits)
             .onDelete { indexSet in
@@ -611,14 +636,13 @@ struct HabitView: View {
                 }
             }
         }
-        .environment(\.editMode, $editMode)
         .listStyle(.insetGrouped)
             .padding(.bottom, 80)
     }
 
     private func selectRandomVerse() {
-        if !bibleVerses.isEmpty {
-            selectedVerse = bibleVerses.randomElement()
+        if !viewModel.bibleVerses.isEmpty {
+            selectedVerse = viewModel.bibleVerses.randomElement()
 
             // 진동 효과
             let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -681,11 +705,9 @@ struct HabitView: View {
 struct HabitRow: View {
     let habit: Habit
     @ObservedObject var viewModel: HabitViewModel
-    @Binding var editMode: EditMode
     @State private var showingDetailView = false
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
-    @State private var showingTimePicker = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -721,23 +743,28 @@ struct HabitRow: View {
                             .font(.title2)
                             .foregroundColor(.primary)
                             .onTapGesture {
-                                if editMode == .inactive {
-                                    startTitleEdit()
-                                }
+                                startTitleEdit()
                             }
 
                         // 알림 상태 표시
-                        if habit.isReminderEnabled {
-                            Image(systemName: "bell.fill")
-                                .font(.caption)
-                                .foregroundColor(.orange)
+                        if !habit.reminderTimes.isEmpty {
+                            HStack(spacing: 2) {
+                                Image(systemName: "bell.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                                
+                                if habit.reminderTimes.count > 1 {
+                                    Text("\(habit.reminderTimes.count)")
+                                        .font(.caption2)
+                                        .foregroundColor(.orange)
+                                        .fontWeight(.semibold)
+                                }
+                            }
                         }
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if editMode == .inactive {
-                            showingDetailView = true
-                        }
+                        showingDetailView = true
                     }
 
                     Spacer()
@@ -759,9 +786,7 @@ struct HabitRow: View {
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    if editMode == .inactive {
-                        showingDetailView = true
-                    }
+                    showingDetailView = true
                 }
             }
 
@@ -818,22 +843,14 @@ struct HabitRow: View {
         .swipeActions(edge: .leading) {
             // 알림 버튼
             Button(action: {
-                if habit.isReminderEnabled {
-                    viewModel.removeHabitReminder(habit)
-                } else {
-                    showingTimePicker = true
-                }
+                showingDetailView = true
             }) {
-                Label(habit.isReminderEnabled ? "알림 해제" : "알림 설정",
-                      systemImage: habit.isReminderEnabled ? "bell.slash.fill" : "bell.fill")
+                Label("알림 관리", systemImage: "bell.fill")
             }
-            .tint(habit.isReminderEnabled ? .orange : .blue)
+            .tint(.blue)
         }
         .sheet(isPresented: $showingDetailView) {
             HabitDetailView(habit: habit, viewModel: viewModel)
-        }
-        .sheet(isPresented: $showingTimePicker) {
-            TimePickerSheet(habit: habit, viewModel: viewModel, isPresented: $showingTimePicker)
         }
     }
 
@@ -902,6 +919,8 @@ struct HabitDetailView: View {
 
     @State private var bibleVerses: [BibleVerse] = []
     @State private var selectedVerse: BibleVerse?
+    @State private var showingAddReminder = false
+    @State private var showingQuoteList = false
 
     init(habit: Habit, viewModel: HabitViewModel) {
         self.habit = habit
@@ -994,6 +1013,70 @@ struct HabitDetailView: View {
                     }
                     .padding(.horizontal)
 
+                    // Reminder Schedule Management
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("알림 스케줄")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                showingAddReminder = true
+                            }) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "plus.circle.fill")
+                                    Text("추가")
+                                }
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                            }
+                        }
+                        .padding(.horizontal)
+                        
+                        if let currentHabit = viewModel.habits.first(where: { $0.id == habit.id }),
+                           !currentHabit.reminderTimes.isEmpty {
+                            VStack(spacing: 8) {
+                                ForEach(currentHabit.reminderTimes.indices, id: \.self) { index in
+                                    HStack {
+                                        Image(systemName: "bell.fill")
+                                            .foregroundColor(.orange)
+                                            .font(.system(size: 16))
+                                        
+                                        Text(currentHabit.reminderTimes[index].formatted(date: .omitted, time: .shortened))
+                                            .font(.body)
+                                        
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            viewModel.removeHabitReminder(currentHabit, time: currentHabit.reminderTimes[index])
+                                        }) {
+                                            Image(systemName: "trash.fill")
+                                                .foregroundColor(.red)
+                                                .font(.system(size: 14))
+                                        }
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .background(Color(UIColor.tertiarySystemGroupedBackground))
+                                    .cornerRadius(8)
+                                }
+                            }
+                            .padding(.horizontal)
+                        } else {
+                            Text("설정된 알림이 없습니다")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 20)
+                        }
+                    }
+                    .padding(.vertical)
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(16)
+                    .padding(.horizontal)
+
                     // Calendar
                     VStack(spacing: 12) {
                         // Weekday Headers
@@ -1066,11 +1149,11 @@ struct HabitDetailView: View {
 
                     // Inspiration Quote Section
                     if let verse = selectedVerse {
-                        MarqueeText(text: verse.krv, reference: verse.reference, onRefresh: selectRandomVerse)
-                            .frame(height: 32)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
+                        MarqueeText(text: verse.krv, reference: verse.reference, onShowMore: {
+                            showingQuoteList = true
+                        })
                             .padding(.horizontal)
+                            .transition(.opacity.combined(with: .scale))
                     }
                 }
                 .padding(.vertical)
@@ -1083,6 +1166,12 @@ struct HabitDetailView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showingAddReminder) {
+                AddReminderSheet(habit: habit, viewModel: viewModel, isPresented: $showingAddReminder)
+            }
+            .sheet(isPresented: $showingQuoteList) {
+                QuoteListView(quotes: viewModel.bibleVerses)
             }
         }
     }
@@ -1120,8 +1209,8 @@ struct HabitDetailView: View {
 
 
     private func selectRandomVerse() {
-        if !bibleVerses.isEmpty {
-            selectedVerse = bibleVerses.randomElement()
+        if !viewModel.bibleVerses.isEmpty {
+            selectedVerse = viewModel.bibleVerses.randomElement()
 
             // 진동 효과
             let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -1130,21 +1219,21 @@ struct HabitDetailView: View {
     }
 }
 
-// MARK: - Time Picker Sheet
-struct TimePickerSheet: View {
+// MARK: - Add Reminder Sheet
+struct AddReminderSheet: View {
     let habit: Habit
     @ObservedObject var viewModel: HabitViewModel
     @Binding var isPresented: Bool
-    @State private var selectedTime = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date()) ?? Date()
+    @State private var selectedTime = Date() // 현재 시간으로 초기화
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Text("알림 시간 설정")
+                Text("알림 추가")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("'\(habit.title)' 습관의 알림 시간을 설정하세요")
+                Text("'\(habit.title)' 습관의 알림 시간을 추가하세요")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -1164,9 +1253,9 @@ struct TimePickerSheet: View {
                 leading: Button("취소") {
                     isPresented = false
                 },
-                trailing: Button("설정") {
+                trailing: Button("추가") {
                     Task {
-                        await viewModel.setHabitReminder(habit, time: selectedTime)
+                        await viewModel.addHabitReminder(habit, time: selectedTime)
                         isPresented = false
                     }
                 }
@@ -1200,3 +1289,4 @@ struct StatBox: View {
         .cornerRadius(12)
     }
 }
+

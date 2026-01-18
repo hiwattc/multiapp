@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import Combine
+import WidgetKit
 
 // MARK: - Tab Type
 enum TabType: String, CaseIterable {
@@ -140,6 +141,10 @@ struct ContentView: View {
                 // 앱이 포그라운드로 돌아올 때마다 배지 초기화
                 UIApplication.shared.applicationIconBadgeNumber = 0
                 print("🔔 앱 활성화 시 알림 배지 초기화: \(UIApplication.shared.applicationIconBadgeNumber)")
+                
+                // 위젯 새로고침 (명언 랜덤 변경)
+                WidgetCenter.shared.reloadAllTimelines()
+                print("🔄 위젯 새로고침 완료")
             }
         }
     }

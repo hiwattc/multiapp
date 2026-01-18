@@ -60,6 +60,13 @@
 			);
 			target = 8418B6502F1681BC00D294F9 /* HabitWidgetExtension */;
 		};
+		84ED39E22F1CFF0500ACAC9D /* Exceptions for "news" folder in "HabitWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HabitAdvice.json,
+			);
+			target = 8418B6502F1681BC00D294F9 /* HabitWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -67,6 +74,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				8418B5772F095BEE00D294F9 /* Exceptions for "news" folder in "news" target */,
+				84ED39E22F1CFF0500ACAC9D /* Exceptions for "news" folder in "HabitWidgetExtension" target */,
 			);
 			path = news;
 			sourceTree = "<group>";
