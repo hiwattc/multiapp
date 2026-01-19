@@ -388,6 +388,7 @@ struct MarqueeText: View {
     let text: String
     let reference: String
     let onShowMore: () -> Void
+    let onRefresh: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -403,6 +404,9 @@ struct MarqueeText: View {
                     .lineLimit(nil)  // 제한 없이 모든 텍스트 표시
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .onTapGesture {
+                        onRefresh()
+                    }
                 
                 HStack {
                     Text(reference)
@@ -476,9 +480,14 @@ struct HabitView: View {
 
                 // Inspiration Quote Section
                 if let verse = selectedVerse {
-                    MarqueeText(text: verse.krv, reference: verse.reference, onShowMore: {
-                        showingQuoteList = true
-                    })
+                    MarqueeText(
+                        text: verse.krv,
+                        reference: verse.reference,
+                        onShowMore: {
+                            showingQuoteList = true
+                        },
+                        onRefresh: selectRandomVerse
+                    )
                         .padding(.horizontal)
                         .padding(.top, 16)
                         .padding(.bottom, 8)
@@ -1149,9 +1158,14 @@ struct HabitDetailView: View {
 
                     // Inspiration Quote Section
                     if let verse = selectedVerse {
-                        MarqueeText(text: verse.krv, reference: verse.reference, onShowMore: {
-                            showingQuoteList = true
-                        })
+                        MarqueeText(
+                            text: verse.krv,
+                            reference: verse.reference,
+                            onShowMore: {
+                                showingQuoteList = true
+                            },
+                            onRefresh: selectRandomVerse
+                        )
                             .padding(.horizontal)
                             .transition(.opacity.combined(with: .scale))
                     }

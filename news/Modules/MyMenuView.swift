@@ -23,6 +23,7 @@ struct MyMenuView: View {
     @State private var showStepCounterView = false
     @State private var showMarbleMaze = false
     @State private var showAdventureGame = false
+    @State private var showWeatherView = false
 
     init() {
         // MailService 초기화는 onAppear에서 수행
@@ -160,6 +161,9 @@ struct MyMenuView: View {
         .sheet(isPresented: $showAdventureGame) {
             AdventureGameView()
         }
+        .sheet(isPresented: $showWeatherView) {
+            WeatherView()
+        }
     }
 
     private func performAction(for item: MyMenuItem) {
@@ -193,7 +197,7 @@ struct MyMenuView: View {
     // MARK: - Action Methods (더미 구현)
     private func showWeather() {
         print("🌤️ 날씨 화면 열기")
-        // 실제로는 날씨 API 연동
+        showWeatherView = true
     }
 
     private func showGyroscope() {

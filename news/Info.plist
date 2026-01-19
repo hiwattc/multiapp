@@ -8,9 +8,9 @@
 		<true/>
 	</dict>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>현재 위치를 지도에 표시하기 위해 위치 권한이 필요합니다.</string>
+    <string>현재 위치를 지도에 표시하고 날씨 정보를 제공하기 위해 위치 권한이 필요합니다.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>지도 기능을 위해 위치 권한이 필요합니다.</string>
+    <string>지도 및 날씨 기능을 위해 위치 권한이 필요합니다.</string>
 	<key>NSAppleSignInUsageDescription</key>
 	<string>Apple ID로 로그인하여 계정을 관리하기 위해 사용됩니다.</string>
 	<key>NSFaceIDUsageDescription</key>
