@@ -38,5 +38,14 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>43808598981-1amrngc7dq2vnki5uojdhvfer7h5cha3.apps.googleusercontent.com</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>youtube</string>
+		<string>reddit</string>
+		<string>fb</string>
+		<string>instagram</string>
+		<string>twitter</string>
+		<string>tiktok</string>
+	</array>
 </dict>
 </plist>

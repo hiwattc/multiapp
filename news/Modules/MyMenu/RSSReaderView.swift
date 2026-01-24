@@ -640,12 +640,115 @@ struct FeedCard: View {
 struct RSSItemCard: View {
     let item: RSSItem
     
-    var body: some View {
-        Button(action: {
-            if let url = URL(string: item.link) {
-                UIApplication.shared.open(url)
+    // 링크 처리 헬퍼 함수
+    private func openLink() {
+        guard let url = URL(string: item.link) else { return }
+        
+        // YouTube 링크 감지 및 앱으로 열기
+        if isYouTubeURL(url) {
+            openYouTubeVideo(url: url)
+        }
+        // Reddit 링크 감지 및 앱으로 열기
+        else if isRedditURL(url) {
+            openRedditPost(url: url)
+        }
+        // 일반 링크는 그냥 열기
+        else {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    // YouTube URL 감지
+    private func isYouTubeURL(_ url: URL) -> Bool {
+        let host = url.host?.lowercased() ?? ""
+        return host.contains("youtube.com") || host.contains("youtu.be")
+    }
+    
+    // YouTube 비디오 ID 추출
+    private func extractYouTubeVideoID(from url: URL) -> String? {
+        let urlString = url.absoluteString
+        
+        // youtube.com/watch?v=VIDEO_ID 형식
+        if urlString.contains("youtube.com/watch") {
+            if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+               let videoID = components.queryItems?.first(where: { $0.name == "v" })?.value {
+                return videoID
             }
-        }) {
+        }
+        
+        // youtu.be/VIDEO_ID 형식
+        if urlString.contains("youtu.be/") {
+            let pathComponents = url.pathComponents
+            if pathComponents.count > 1 {
+                return pathComponents[1]
+            }
+        }
+        
+        return nil
+    }
+    
+    // YouTube 앱으로 열기
+    private func openYouTubeVideo(url: URL) {
+        guard let videoID = extractYouTubeVideoID(from: url) else {
+            // 비디오 ID를 추출할 수 없으면 브라우저로 열기
+            UIApplication.shared.open(url)
+            return
+        }
+        
+        // YouTube 앱 URL scheme
+        let appURL = URL(string: "youtube://www.youtube.com/watch?v=\(videoID)")!
+        
+        // YouTube 앱이 설치되어 있으면 앱으로 열기
+        if UIApplication.shared.canOpenURL(appURL) {
+            UIApplication.shared.open(appURL)
+        } else {
+            // YouTube 앱이 없으면 브라우저로 열기
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    // MARK: - Reddit 관련 함수
+    
+    // Reddit URL 감지
+    private func isRedditURL(_ url: URL) -> Bool {
+        let host = url.host?.lowercased() ?? ""
+        return host.contains("reddit.com")
+    }
+    
+    // Reddit 앱으로 열기
+    private func openRedditPost(url: URL) {
+        // Reddit 원본 URL의 경로 추출
+        let urlString = url.absoluteString
+        
+        // old.reddit.com을 reddit.com으로 변환
+        let cleanedURLString = urlString
+            .replacingOccurrences(of: "old.reddit.com", with: "reddit.com")
+            .replacingOccurrences(of: "www.reddit.com", with: "reddit.com")
+        
+        // Reddit 앱 URL scheme 생성
+        // reddit://reddit.com/r/subreddit/... 형식
+        if let cleanedURL = URL(string: cleanedURLString),
+           let components = URLComponents(url: cleanedURL, resolvingAgainstBaseURL: false) {
+            
+            // reddit:// scheme으로 변경
+            var redditComponents = components
+            redditComponents.scheme = "reddit"
+            
+            if let appURL = redditComponents.url {
+                // Reddit 앱이 설치되어 있으면 앱으로 열기
+                if UIApplication.shared.canOpenURL(appURL) {
+                    UIApplication.shared.open(appURL)
+                    return
+                }
+            }
+        }
+        
+        // Reddit 앱이 없거나 URL 변환 실패 시 브라우저로 열기
+        UIApplication.shared.open(url)
+    }
+    
+    var body: some View {
+        Button(action: openLink) {
             VStack(alignment: .leading, spacing: 12) {
                 // Image
                 if let imageURL = item.imageURL, let url = URL(string: imageURL) {
