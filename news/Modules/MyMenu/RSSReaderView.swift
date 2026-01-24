@@ -7,12 +7,14 @@ struct RSSFeed: Identifiable, Codable {
     var name: String
     var url: String
     var category: String
+    var isFavorite: Bool
     
-    init(id: UUID = UUID(), name: String, url: String, category: String = "기타") {
+    init(id: UUID = UUID(), name: String, url: String, category: String = "기타", isFavorite: Bool = false) {
         self.id = id
         self.name = name
         self.url = url
         self.category = category
+        self.isFavorite = isFavorite
     }
 }
 
@@ -129,6 +131,15 @@ class RSSParser: NSObject, XMLParserDelegate, ObservableObject {
             currentImageURL = ""
         }
         
+        // YouTube RSS 및 Atom 피드의 link 태그 처리
+        // <link rel="alternate" href="https://www.youtube.com/watch?v=..."/>
+        if elementName == "link" {
+            if let href = attributeDict["href"] {
+                currentLink = href
+                print("🔗 Link href 발견: \(href)")
+            }
+        }
+        
         // 이미지 URL 추출 (여러 형식 지원)
         if elementName == "enclosure" {
             if let type = attributeDict["type"], type.contains("image"),
@@ -139,6 +150,8 @@ class RSSParser: NSObject, XMLParserDelegate, ObservableObject {
             if let url = attributeDict["url"] {
                 currentImageURL = url
             }
+        } else if elementName == "media:group" {
+            // YouTube는 media:group 안에 썸네일이 있음
         }
     }
     
@@ -163,6 +176,11 @@ class RSSParser: NSObject, XMLParserDelegate, ObservableObject {
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if elementName == "item" || elementName == "entry" {
+            print("📰 RSS 아이템 파싱 완료:")
+            print("   제목: \(currentTitle)")
+            print("   링크: \(currentLink)")
+            print("   이미지: \(currentImageURL)")
+            
             let item = RSSItem(
                 title: currentTitle,
                 link: currentLink,
@@ -192,6 +210,21 @@ class RSSParser: NSObject, XMLParserDelegate, ObservableObject {
     }
 }
 
+// MARK: - Feed Tab Type
+enum FeedTab: String, CaseIterable {
+    case favorite = "즐겨찾기"
+    case myFeeds = "내피드"
+    case popular = "인기피드"
+    
+    var icon: String {
+        switch self {
+        case .favorite: return "star.fill"
+        case .myFeeds: return "folder.fill"
+        case .popular: return "flame.fill"
+        }
+    }
+}
+
 // MARK: - RSS Reader View
 struct RSSReaderView: View {
     @Environment(\.dismiss) var dismiss
@@ -203,6 +236,7 @@ struct RSSReaderView: View {
     @State private var newFeedURL = ""
     @State private var newFeedCategory = "기타"
     @State private var selectedCategory = "전체"
+    @State private var selectedTab: FeedTab = .favorite
     
     // 인기 RSS 피드 예시
     let popularFeeds = [
@@ -277,13 +311,25 @@ struct RSSReaderView: View {
         return ["전체"] + cats.sorted()
     }
     
-    // 필터링된 인기 피드
+    // 필터링된 인기 피드 (즐겨찾기 상태 반영)
     var filteredPopularFeeds: [RSSFeed] {
-        if selectedCategory == "전체" {
-            return popularFeeds
-        } else {
-            return popularFeeds.filter { $0.category == selectedCategory }
+        let filtered = selectedCategory == "전체" 
+            ? popularFeeds 
+            : popularFeeds.filter { $0.category == selectedCategory }
+        
+        // 내 피드에서 즐겨찾기 상태 가져오기
+        return filtered.map { feed in
+            var updatedFeed = feed
+            if let myFeed = feeds.first(where: { $0.url == feed.url }) {
+                updatedFeed.isFavorite = myFeed.isFavorite
+            }
+            return updatedFeed
         }
+    }
+    
+    // 즐겨찾기된 피드 목록 (내 피드만)
+    var favoriteFeeds: [RSSFeed] {
+        return feeds.filter { $0.isFavorite }
     }
     
     var body: some View {
@@ -333,108 +379,200 @@ struct RSSReaderView: View {
             }
             .onAppear {
                 loadFeeds()
+                loadFavoriteFeedsOnStartup()
             }
         }
     }
     
     // MARK: - Feed List View
     private var feedListView: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Image(systemName: "newspaper.fill")
-                            .foregroundColor(.orange)
-                        Text("RSS 피드 구독")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                    }
-                    
-                    Text("RSS 피드를 추가하고 최신 뉴스를 받아보세요")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                
-                // My Feeds
-                if !feeds.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
-                            Text("내 피드")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                        }
-                        .padding(.horizontal)
-                        
-                        ForEach(feeds) { feed in
-                            FeedCard(feed: feed) {
-                                selectedFeed = feed
-                                Task {
-                                    await parser.fetchFeed(from: feed.url)
-                                }
-                            } onDelete: {
-                                deleteFeed(feed)
-                            }
-                        }
-                        .padding(.horizontal)
+        VStack(spacing: 0) {
+            // 탭 메뉴
+            tabBar
+            
+            // 탭별 콘텐츠
+            ScrollView {
+                VStack(spacing: 16) {
+                    switch selectedTab {
+                    case .favorite:
+                        favoriteFeedsSection
+                    case .myFeeds:
+                        myFeedsSection
+                    case .popular:
+                        popularFeedsSection
                     }
                 }
-                
-                // Popular Feeds
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "flame.fill")
-                            .foregroundColor(.orange)
-                        Text("인기 피드")
-                            .font(.headline)
-                            .fontWeight(.bold)
+                .padding(.vertical)
+            }
+            .background(Color(UIColor.systemGroupedBackground))
+        }
+    }
+    
+    // MARK: - Tab Bar
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            ForEach(FeedTab.allCases, id: \.self) { tab in
+                Button(action: {
+                    withAnimation {
+                        selectedTab = tab
                     }
-                    .padding(.horizontal)
-                    
-                    // 카테고리 해시태그
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(categories, id: \.self) { category in
-                                Button(action: {
-                                    withAnimation {
-                                        selectedCategory = category
-                                    }
-                                }) {
-                                    Text("#\(category)")
-                                        .font(.subheadline)
-                                        .fontWeight(selectedCategory == category ? .bold : .regular)
-                                        .foregroundColor(selectedCategory == category ? .white : .orange)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(
-                                            Capsule()
-                                                .fill(selectedCategory == category ? Color.orange : Color.orange.opacity(0.1))
-                                        )
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
+                }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: tab.icon)
+                            .font(.system(size: 20))
+                        Text(tab.rawValue)
+                            .font(.caption)
+                            .fontWeight(.medium)
                     }
-                    
-                    // 필터링된 피드 목록
-                    ForEach(filteredPopularFeeds) { feed in
-                        FeedCard(feed: feed, showDelete: false) {
-                            selectedFeed = feed
-                            Task {
-                                await parser.fetchFeed(from: feed.url)
-                            }
-                        } onDelete: {}
-                    }
-                    .padding(.horizontal)
+                    .foregroundColor(selectedTab == tab ? .orange : .gray)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        selectedTab == tab ? Color.orange.opacity(0.1) : Color.clear
+                    )
                 }
             }
-            .padding(.vertical)
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .overlay(
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color.gray.opacity(0.2)),
+            alignment: .bottom
+        )
+    }
+    
+    // MARK: - Favorite Feeds Section
+    private var favoriteFeedsSection: some View {
+        VStack(spacing: 12) {
+            if favoriteFeeds.isEmpty {
+                emptyStateView(
+                    icon: "star.slash",
+                    title: "즐겨찾기된 피드가 없습니다",
+                    message: "자주 보는 피드를 즐겨찾기하세요"
+                )
+                .padding(.top, 60)
+            } else {
+                ForEach(favoriteFeeds) { feed in
+                    FeedCard(
+                        feed: feed,
+                        showDelete: feeds.contains(where: { $0.id == feed.id }),
+                        showFavorite: true,
+                        onToggleFavorite: {
+                            toggleFavorite(feed)
+                        }
+                    ) {
+                        selectedFeed = feed
+                        Task {
+                            await parser.fetchFeed(from: feed.url)
+                        }
+                    } onDelete: {
+                        deleteFeed(feed)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+    
+    // MARK: - My Feeds Section
+    private var myFeedsSection: some View {
+        VStack(spacing: 12) {
+            if feeds.isEmpty {
+                emptyStateView(
+                    icon: "folder.badge.plus",
+                    title: "저장된 피드가 없습니다",
+                    message: "새로운 RSS 피드를 추가해보세요"
+                )
+                .padding(.top, 60)
+            } else {
+                ForEach(feeds) { feed in
+                    FeedCard(
+                        feed: feed,
+                        showFavorite: true,
+                        onToggleFavorite: {
+                            toggleFavorite(feed)
+                        }
+                    ) {
+                        selectedFeed = feed
+                        Task {
+                            await parser.fetchFeed(from: feed.url)
+                        }
+                    } onDelete: {
+                        deleteFeed(feed)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+    
+    // MARK: - Popular Feeds Section
+    private var popularFeedsSection: some View {
+        VStack(spacing: 12) {
+            // 카테고리 해시태그
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(categories, id: \.self) { category in
+                        Button(action: {
+                            withAnimation {
+                                selectedCategory = category
+                            }
+                        }) {
+                            Text("#\(category)")
+                                .font(.subheadline)
+                                .fontWeight(selectedCategory == category ? .bold : .regular)
+                                .foregroundColor(selectedCategory == category ? .white : .orange)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    Capsule()
+                                        .fill(selectedCategory == category ? Color.orange : Color.orange.opacity(0.1))
+                                )
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+            
+            // 필터링된 피드 목록
+            ForEach(filteredPopularFeeds) { feed in
+                FeedCard(
+                    feed: feed,
+                    showDelete: false,
+                    showFavorite: true,
+                    onToggleFavorite: {
+                        togglePopularFeedFavorite(feed)
+                    }
+                ) {
+                    selectedFeed = feed
+                    Task {
+                        await parser.fetchFeed(from: feed.url)
+                    }
+                } onDelete: {}
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    // MARK: - Empty State View
+    private func emptyStateView(icon: String, title: String, message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 60))
+                .foregroundColor(.gray.opacity(0.5))
+            
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.primary)
+            
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
     }
     
     // MARK: - News List View
@@ -571,12 +709,70 @@ struct RSSReaderView: View {
         feeds.removeAll { $0.id == feed.id }
         saveFeeds()
     }
+    
+    // 즐겨찾기 토글 (내 피드)
+    private func toggleFavorite(_ feed: RSSFeed) {
+        if let index = feeds.firstIndex(where: { $0.id == feed.id }) {
+            feeds[index].isFavorite.toggle()
+            saveFeeds()
+            print("⭐️ 즐겨찾기 토글: \(feeds[index].name) - \(feeds[index].isFavorite ? "ON" : "OFF")")
+        }
+    }
+    
+    // 즐겨찾기 토글 (인기 피드) - 내 피드로 추가
+    private func togglePopularFeedFavorite(_ feed: RSSFeed) {
+        // 이미 내 피드에 있는지 확인
+        if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
+            feeds[index].isFavorite.toggle()
+            saveFeeds()
+            print("⭐️ 인기 피드 즐겨찾기 토글: \(feeds[index].name) - \(feeds[index].isFavorite ? "ON" : "OFF")")
+        } else {
+            // 내 피드에 없으면 추가하고 즐겨찾기 설정
+            var newFeed = feed
+            newFeed.isFavorite = true
+            feeds.append(newFeed)
+            saveFeeds()
+            print("⭐️ 인기 피드를 내 피드에 추가하고 즐겨찾기: \(newFeed.name)")
+        }
+    }
+    
+    // 앱 시작 시 즐겨찾기 피드 자동 조회
+    private func loadFavoriteFeedsOnStartup() {
+        let favorites = favoriteFeeds
+        
+        if favorites.isEmpty {
+            print("⭐️ 즐겨찾기된 피드가 없습니다")
+            // 즐겨찾기가 없으면 내피드 탭으로 이동
+            if !feeds.isEmpty {
+                selectedTab = .myFeeds
+            } else {
+                selectedTab = .popular
+            }
+            return
+        }
+        
+        print("⭐️ 즐겨찾기 피드 \(favorites.count)개 자동 조회 시작")
+        
+        // 즐겨찾기 탭 유지
+        selectedTab = .favorite
+        
+        // 첫 번째 즐겨찾기 피드를 선택하고 로드
+        if let firstFavorite = favorites.first {
+            selectedFeed = firstFavorite
+            Task {
+                await parser.fetchFeed(from: firstFavorite.url)
+                print("⭐️ 첫 번째 즐겨찾기 피드 로드 완료: \(firstFavorite.name)")
+            }
+        }
+    }
 }
 
 // MARK: - Feed Card
 struct FeedCard: View {
     let feed: RSSFeed
     var showDelete: Bool = true
+    var showFavorite: Bool = false
+    var onToggleFavorite: (() -> Void)? = nil
     let onTap: () -> Void
     let onDelete: () -> Void
     
@@ -614,17 +810,32 @@ struct FeedCard: View {
                 
                 Spacer()
                 
-                if showDelete {
-                    Button(action: onDelete) {
-                        Image(systemName: "trash.fill")
-                            .foregroundColor(.red)
-                            .font(.system(size: 16))
+                HStack(spacing: 12) {
+                    // 즐겨찾기 버튼
+                    if showFavorite {
+                        Button(action: {
+                            onToggleFavorite?()
+                        }) {
+                            Image(systemName: feed.isFavorite ? "star.fill" : "star")
+                                .foregroundColor(feed.isFavorite ? .yellow : .gray)
+                                .font(.system(size: 18))
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
-                } else {
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    
+                    // 삭제 버튼 또는 화살표
+                    if showDelete {
+                        Button(action: onDelete) {
+                            Image(systemName: "trash.fill")
+                                .foregroundColor(.red)
+                                .font(.system(size: 16))
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    } else {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .padding()
@@ -642,18 +853,27 @@ struct RSSItemCard: View {
     
     // 링크 처리 헬퍼 함수
     private func openLink() {
-        guard let url = URL(string: item.link) else { return }
+        guard let url = URL(string: item.link) else {
+            print("❌ URL 변환 실패: \(item.link)")
+            return
+        }
+        
+        print("🔗 클릭된 URL: \(url.absoluteString)")
+        print("🔗 호스트: \(url.host ?? "없음")")
         
         // YouTube 링크 감지 및 앱으로 열기
         if isYouTubeURL(url) {
+            print("🎥 YouTube URL 감지")
             openYouTubeVideo(url: url)
         }
         // Reddit 링크 감지 및 앱으로 열기
         else if isRedditURL(url) {
+            print("🔴 Reddit URL 감지")
             openRedditPost(url: url)
         }
         // 일반 링크는 그냥 열기
         else {
+            print("🌐 일반 URL로 Safari 실행")
             UIApplication.shared.open(url)
         }
     }
@@ -689,19 +909,27 @@ struct RSSItemCard: View {
     
     // YouTube 앱으로 열기
     private func openYouTubeVideo(url: URL) {
+        print("🎥 YouTube 비디오 열기 시도: \(url.absoluteString)")
+        
         guard let videoID = extractYouTubeVideoID(from: url) else {
+            print("❌ 비디오 ID 추출 실패, Safari로 열기")
             // 비디오 ID를 추출할 수 없으면 브라우저로 열기
             UIApplication.shared.open(url)
             return
         }
         
+        print("✅ 비디오 ID 추출 성공: \(videoID)")
+        
         // YouTube 앱 URL scheme
         let appURL = URL(string: "youtube://www.youtube.com/watch?v=\(videoID)")!
+        print("🔗 YouTube 앱 URL: \(appURL.absoluteString)")
         
         // YouTube 앱이 설치되어 있으면 앱으로 열기
         if UIApplication.shared.canOpenURL(appURL) {
+            print("✅ YouTube 앱 설치됨, 앱으로 열기")
             UIApplication.shared.open(appURL)
         } else {
+            print("❌ YouTube 앱 미설치, Safari로 열기")
             // YouTube 앱이 없으면 브라우저로 열기
             UIApplication.shared.open(url)
         }
@@ -717,6 +945,8 @@ struct RSSItemCard: View {
     
     // Reddit 앱으로 열기
     private func openRedditPost(url: URL) {
+        print("🔴 Reddit 포스트 열기 시도: \(url.absoluteString)")
+        
         // Reddit 원본 URL의 경로 추출
         let urlString = url.absoluteString
         
@@ -724,6 +954,8 @@ struct RSSItemCard: View {
         let cleanedURLString = urlString
             .replacingOccurrences(of: "old.reddit.com", with: "reddit.com")
             .replacingOccurrences(of: "www.reddit.com", with: "reddit.com")
+        
+        print("🔗 정리된 URL: \(cleanedURLString)")
         
         // Reddit 앱 URL scheme 생성
         // reddit://reddit.com/r/subreddit/... 형식
@@ -735,14 +967,20 @@ struct RSSItemCard: View {
             redditComponents.scheme = "reddit"
             
             if let appURL = redditComponents.url {
+                print("🔗 Reddit 앱 URL: \(appURL.absoluteString)")
+                
                 // Reddit 앱이 설치되어 있으면 앱으로 열기
                 if UIApplication.shared.canOpenURL(appURL) {
+                    print("✅ Reddit 앱 설치됨, 앱으로 열기")
                     UIApplication.shared.open(appURL)
                     return
+                } else {
+                    print("❌ Reddit 앱 미설치")
                 }
             }
         }
         
+        print("🌐 Safari로 열기")
         // Reddit 앱이 없거나 URL 변환 실패 시 브라우저로 열기
         UIApplication.shared.open(url)
     }
