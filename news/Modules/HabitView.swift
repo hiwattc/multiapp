@@ -717,6 +717,8 @@ struct HabitRow: View {
     @State private var showingDetailView = false
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
+    @State private var showingUncheckAlert = false
+    @State private var dayToUncheck: Int?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -811,7 +813,15 @@ struct HabitRow: View {
                                     .fontWeight(viewModel.getDayOfWeek(day: day) == 1 || viewModel.getDayOfWeek(day: day) == 7 ? .semibold : .regular)
 
                                 Button(action: {
-                                    viewModel.toggleCompletion(habitId: habit.id, day: day)
+                                    let isCompleted = viewModel.isCompleted(habitId: habit.id, day: day)
+                                    if isCompleted {
+                                        // 체크 해제 시 확인 메시지
+                                        dayToUncheck = day
+                                        showingUncheckAlert = true
+                                    } else {
+                                        // 체크 시 바로 실행
+                                        viewModel.toggleCompletion(habitId: habit.id, day: day)
+                                    }
                                 }) {
                                     ZStack {
                                         Circle()
@@ -860,6 +870,21 @@ struct HabitRow: View {
         }
         .sheet(isPresented: $showingDetailView) {
             HabitDetailView(habit: habit, viewModel: viewModel)
+        }
+        .alert("체크 해제", isPresented: $showingUncheckAlert) {
+            Button("취소", role: .cancel) {
+                dayToUncheck = nil
+            }
+            Button("해제", role: .destructive) {
+                if let day = dayToUncheck {
+                    viewModel.toggleCompletion(habitId: habit.id, day: day)
+                    dayToUncheck = nil
+                }
+            }
+        } message: {
+            if let day = dayToUncheck {
+                Text("\(viewModel.currentMonth)월 \(day)일의 완료 체크를 해제하시겠습니까?")
+            }
         }
     }
 
@@ -930,6 +955,8 @@ struct HabitDetailView: View {
     @State private var selectedVerse: BibleVerse?
     @State private var showingAddReminder = false
     @State private var showingQuoteList = false
+    @State private var showingUncheckAlert = false
+    @State private var dayToUncheck: Int?
 
     init(habit: Habit, viewModel: HabitViewModel) {
         self.habit = habit
@@ -1115,7 +1142,14 @@ struct HabitDetailView: View {
                                 let weekday = viewModel.getDayOfWeek(day: day)
 
                                 Button(action: {
-                                    viewModel.toggleCompletion(habitId: habit.id, day: day)
+                                    if isCompleted {
+                                        // 체크 해제 시 확인 메시지
+                                        dayToUncheck = day
+                                        showingUncheckAlert = true
+                                    } else {
+                                        // 체크 시 바로 실행
+                                        viewModel.toggleCompletion(habitId: habit.id, day: day)
+                                    }
                                 }) {
                                     VStack(spacing: 4) {
                                         Text("\(day)")
@@ -1186,6 +1220,21 @@ struct HabitDetailView: View {
             }
             .sheet(isPresented: $showingQuoteList) {
                 QuoteListView(quotes: viewModel.bibleVerses)
+            }
+            .alert("체크 해제", isPresented: $showingUncheckAlert) {
+                Button("취소", role: .cancel) {
+                    dayToUncheck = nil
+                }
+                Button("해제", role: .destructive) {
+                    if let day = dayToUncheck {
+                        viewModel.toggleCompletion(habitId: habit.id, day: day)
+                        dayToUncheck = nil
+                    }
+                }
+            } message: {
+                if let day = dayToUncheck {
+                    Text("\(viewModel.currentMonth)월 \(day)일의 완료 체크를 해제하시겠습니까?")
+                }
             }
         }
     }

@@ -24,12 +24,22 @@ struct MyMenuView: View {
     @State private var showMarbleMaze = false
     @State private var showAdventureGame = false
     @State private var showWeatherView = false
+    @State private var showCryptoView = false
+    @State private var showStockMapView = false
+    @State private var showRSSReaderView = false
 
     init() {
         // MailService 초기화는 onAppear에서 수행
     }
 
     let menuItems = [
+        // 뉴스
+        MyMenuItem(title: "RSS리더", icon: "newspaper.fill", color: .orange, description: "RSS 피드 구독 및 뉴스", category: "뉴스"),
+        
+        // 금융
+        MyMenuItem(title: "미국증시", icon: "chart.bar.fill", color: .blue, description: "미국 주식 시장 맵", category: "금융"),
+        MyMenuItem(title: "암호화폐", icon: "bitcoinsign.circle.fill", color: .orange, description: "암호화폐 시세 및 뉴스", category: "금융"),
+        
         // 날씨 및 환경
         MyMenuItem(title: "날씨", icon: "cloud.sun.fill", color: .blue, description: "현재 날씨 및 예보", category: "환경"),
         MyMenuItem(title: "대기질", icon: "aqi.medium", color: .green, description: "미세먼지 및 대기 상태", category: "환경"),
@@ -73,7 +83,7 @@ struct MyMenuView: View {
     }
 
     var categories: [String] {
-        ["환경", "센서", "통신", "AR/VR", "미디어", "도구", "생산성", "건강", "엔터", "게임"]
+        ["뉴스", "금융", "환경", "센서", "통신", "AR/VR", "미디어", "도구", "생산성", "건강", "엔터", "게임"]
     }
 
     var body: some View {
@@ -164,11 +174,26 @@ struct MyMenuView: View {
         .sheet(isPresented: $showWeatherView) {
             WeatherView()
         }
+        .sheet(isPresented: $showCryptoView) {
+            CryptoView()
+        }
+        .sheet(isPresented: $showStockMapView) {
+            StockMapView()
+        }
+        .sheet(isPresented: $showRSSReaderView) {
+            RSSReaderView()
+        }
     }
 
     private func performAction(for item: MyMenuItem) {
         // 각 메뉴 아이템에 대한 액션 구현
         switch item.title {
+        case "RSS리더":
+            showRSSReader()
+        case "미국증시":
+            showStockMap()
+        case "암호화폐":
+            showCrypto()
         case "날씨":
             showWeather()
         case "자이로스코프":
@@ -195,6 +220,21 @@ struct MyMenuView: View {
     }
 
     // MARK: - Action Methods (더미 구현)
+    private func showRSSReader() {
+        print("📰 RSS리더 화면 열기")
+        showRSSReaderView = true
+    }
+    
+    private func showStockMap() {
+        print("📊 미국증시 화면 열기")
+        showStockMapView = true
+    }
+    
+    private func showCrypto() {
+        print("💰 암호화폐 화면 열기")
+        showCryptoView = true
+    }
+    
     private func showWeather() {
         print("🌤️ 날씨 화면 열기")
         showWeatherView = true

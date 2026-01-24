@@ -1,13 +1,73 @@
 import SwiftUI
 import Combine
 
-// MARK: - Art Models
+// MARK: - Museum Enum
+enum Museum: String, CaseIterable {
+    case met = "메트로폴리탄 미술관"
+    case chicago = "시카고 미술관"
+    
+    var englishName: String {
+        switch self {
+        case .met: return "The Metropolitan Museum of Art"
+        case .chicago: return "The Art Institute of Chicago"
+        }
+    }
+    
+    var popularTags: [String] {
+        switch self {
+        case .met:
+            return [
+                "Monet", "Van Gogh", "Rembrandt", "Picasso", "Renoir",
+                "Cézanne", "Vermeer", "Degas", "Manet", "Cassatt",
+                "Egyptian", "Greek", "Renaissance", "Impressionism", "Modern Art",
+                "Sculpture", "Portrait", "Landscape", "Still Life", "Abstract"
+            ]
+        case .chicago:
+            return [
+                "Monet", "Van Gogh", "Seurat", "Hopper", "Wood",
+                "Renoir", "Picasso", "Matisse", "Pollock", "Rothko",
+                "Impressionism", "Modern Art", "Contemporary", "American Art", "Asian Art",
+                "Photography", "Portrait", "Landscape", "Abstract", "Expressionism"
+            ]
+        }
+    }
+}
+
+// MARK: - Art Models (Met Museum)
 struct MetSearchResponse: Codable {
     let total: Int
     let objectIDs: [Int]?
 }
 
-struct Artwork: Codable, Identifiable {
+struct Artwork: Identifiable {
+    let objectID: Int
+    let title: String
+    let artistDisplayName: String?
+    let objectDate: String?
+    let medium: String?
+    let department: String?
+    let culture: String?
+    let primaryImage: String?
+    let primaryImageSmall: String?
+    let objectURL: String?
+    let creditLine: String?
+    let classification: String?
+    let dimensions: String?
+    let museum: Museum
+    
+    var id: Int { objectID }
+    
+    var artist: String {
+        artistDisplayName ?? "작가 미상"
+    }
+    
+    var date: String {
+        objectDate ?? "제작연도 미상"
+    }
+}
+
+// Met Museum API response
+struct MetArtwork: Codable {
     let objectID: Int
     let title: String
     let artistDisplayName: String?
@@ -22,30 +82,120 @@ struct Artwork: Codable, Identifiable {
     let classification: String?
     let dimensions: String?
     
-    var id: Int { objectID }
+    func toArtwork() -> Artwork {
+        return Artwork(
+            objectID: objectID,
+            title: title,
+            artistDisplayName: artistDisplayName,
+            objectDate: objectDate,
+            medium: medium,
+            department: department,
+            culture: culture,
+            primaryImage: primaryImage,
+            primaryImageSmall: primaryImageSmall,
+            objectURL: objectURL,
+            creditLine: creditLine,
+            classification: classification,
+            dimensions: dimensions,
+            museum: .met
+        )
+    }
+}
+
+// MARK: - Chicago Art Institute Models
+struct ChicagoSearchResponse: Codable {
+    let data: [ChicagoArtwork]
+    let pagination: Pagination
+    
+    struct Pagination: Codable {
+        let total: Int
+        let limit: Int
+        let offset: Int
+    }
+}
+
+struct ChicagoArtworkDetail: Codable {
+    let data: ChicagoArtwork
+}
+
+struct ChicagoArtwork: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let artistDisplay: String?
+    let dateDisplay: String?
+    let mediumDisplay: String?
+    let departmentTitle: String?
+    let placeOfOrigin: String?
+    let imageId: String?
+    let creditLine: String?
+    let classification: String?
+    let dimensions: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case artistDisplay = "artist_display"
+        case dateDisplay = "date_display"
+        case mediumDisplay = "medium_display"
+        case departmentTitle = "department_title"
+        case placeOfOrigin = "place_of_origin"
+        case imageId = "image_id"
+        case creditLine = "credit_line"
+        case classification = "classification_title"
+        case dimensions
+    }
+    
+    var imageURL: String? {
+        guard let imageId = imageId else { return nil }
+        return "https://www.artic.edu/iiif/2/\(imageId)/full/843,/0/default.jpg"
+    }
     
     var artist: String {
-        artistDisplayName ?? "작가 미상"
+        artistDisplay ?? "작가 미상"
     }
     
     var date: String {
-        objectDate ?? "제작연도 미상"
+        dateDisplay ?? "제작연도 미상"
+    }
+    
+    // Convert to Artwork for unified display
+    func toArtwork() -> Artwork {
+        return Artwork(
+            objectID: id,
+            title: title,
+            artistDisplayName: artistDisplay,
+            objectDate: dateDisplay,
+            medium: mediumDisplay,
+            department: departmentTitle,
+            culture: placeOfOrigin,
+            primaryImage: imageURL,
+            primaryImageSmall: imageURL,
+            objectURL: "https://www.artic.edu/artworks/\(id)",
+            creditLine: creditLine,
+            classification: classification,
+            dimensions: dimensions,
+            museum: .chicago
+        )
     }
 }
 
 // MARK: - Art Service
 class ArtService {
     static let shared = ArtService()
-    private let baseURL = "https://collectionapi.metmuseum.org/public/collection/v1"
+    private let metBaseURL = "https://collectionapi.metmuseum.org/public/collection/v1"
+    private let chicagoBaseURL = "https://api.artic.edu/api/v1"
     
     // 캐시 추가
-    private var artworkCache: [Int: Artwork] = [:]
-    private var featuredCache: [Artwork]?
-    private var cacheTimestamp: Date?
+    private var artworkCache: [String: Artwork] = [:] // Changed to String key for museum+id
+    private var featuredCacheMet: [Artwork]?
+    private var featuredCacheChicago: [Artwork]?
+    private var cacheTimestampMet: Date?
+    private var cacheTimestampChicago: Date?
     private let cacheValidDuration: TimeInterval = 3600 // 1시간
     
-    func searchArtworks(query: String = "painting") async throws -> [Int] {
-        let urlString = "\(baseURL)/search?hasImages=true&q=\(query)"
+    // MARK: - Met Museum Methods
+    func searchMetArtworks(query: String = "painting") async throws -> [Int] {
+        let urlString = "\(metBaseURL)/search?hasImages=true&q=\(query)"
         guard let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: encodedURL) else {
             throw URLError(.badURL)
@@ -53,32 +203,73 @@ class ArtService {
         
         let (data, _) = try await URLSession.shared.data(from: url)
         let response = try JSONDecoder().decode(MetSearchResponse.self, from: data)
-        return Array((response.objectIDs ?? []).prefix(30)) // 50개 -> 30개로 감소
+        return Array((response.objectIDs ?? []).prefix(30))
     }
     
-    func getArtwork(objectID: Int) async throws -> Artwork {
-        // 캐시 확인
-        if let cached = artworkCache[objectID] {
+    func getMetArtwork(objectID: Int) async throws -> Artwork {
+        let cacheKey = "met_\(objectID)"
+        if let cached = artworkCache[cacheKey] {
             return cached
         }
         
-        let urlString = "\(baseURL)/objects/\(objectID)"
+        let urlString = "\(metBaseURL)/objects/\(objectID)"
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
         
         let (data, _) = try await URLSession.shared.data(from: url)
-        let artwork = try JSONDecoder().decode(Artwork.self, from: data)
+        let metArtwork = try JSONDecoder().decode(MetArtwork.self, from: data)
+        let artwork = metArtwork.toArtwork()
         
-        // 캐시 저장
-        artworkCache[objectID] = artwork
+        artworkCache[cacheKey] = artwork
         return artwork
     }
     
-    func getFeaturedArtworks() async throws -> [Artwork] {
+    // MARK: - Chicago Museum Methods
+    func searchChicagoArtworks(query: String = "painting") async throws -> [Int] {
+        let urlString = "\(chicagoBaseURL)/artworks/search?q=\(query)&limit=30&fields=id,title,artist_display,date_display,medium_display,department_title,place_of_origin,image_id,credit_line,classification_title,dimensions"
+        guard let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: encodedURL) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(ChicagoSearchResponse.self, from: data)
+        return response.data.map { $0.id }
+    }
+    
+    func getChicagoArtwork(objectID: Int) async throws -> Artwork {
+        let cacheKey = "chicago_\(objectID)"
+        if let cached = artworkCache[cacheKey] {
+            return cached
+        }
+        
+        let urlString = "\(chicagoBaseURL)/artworks/\(objectID)?fields=id,title,artist_display,date_display,medium_display,department_title,place_of_origin,image_id,credit_line,classification_title,dimensions"
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(ChicagoArtworkDetail.self, from: data)
+        let artwork = response.data.toArtwork()
+        
+        artworkCache[cacheKey] = artwork
+        return artwork
+    }
+    
+    func getFeaturedArtworks(museum: Museum) async throws -> [Artwork] {
+        switch museum {
+        case .met:
+            return try await getFeaturedMetArtworks()
+        case .chicago:
+            return try await getFeaturedChicagoArtworks()
+        }
+    }
+    
+    private func getFeaturedMetArtworks() async throws -> [Artwork] {
         // 캐시 확인
-        if let cached = featuredCache,
-           let timestamp = cacheTimestamp,
+        if let cached = featuredCacheMet,
+           let timestamp = cacheTimestampMet,
            Date().timeIntervalSince(timestamp) < cacheValidDuration {
             return cached
         }
@@ -96,20 +287,19 @@ class ArtService {
             437394, // Degas - The Dance Class
             436947, // Cassatt - Lady at the Tea Table
             437112, // Manet - Boating
-            459055  // Klimt - Mäda Primavesi (12개로 축소)
+            459055  // Klimt - Mäda Primavesi
         ]
         
-        // 병렬 처리로 속도 개선
         let artworks = await withTaskGroup(of: Artwork?.self) { group in
             for id in featuredIDs {
                 group.addTask {
                     do {
-                        let artwork = try await self.getArtwork(objectID: id)
+                        let artwork = try await self.getMetArtwork(objectID: id)
                         if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
                             return artwork
                         }
                     } catch {
-                        print("Failed to load artwork \(id): \(error)")
+                        print("Failed to load Met artwork \(id): \(error)")
                     }
                     return nil
                 }
@@ -124,17 +314,70 @@ class ArtService {
             return results
         }
         
-        // 캐시 저장
-        featuredCache = artworks
-        cacheTimestamp = Date()
+        featuredCacheMet = artworks
+        cacheTimestampMet = Date()
+        return artworks
+    }
+    
+    private func getFeaturedChicagoArtworks() async throws -> [Artwork] {
+        // 캐시 확인
+        if let cached = featuredCacheChicago,
+           let timestamp = cacheTimestampChicago,
+           Date().timeIntervalSince(timestamp) < cacheValidDuration {
+            return cached
+        }
         
+        // 시카고 미술관의 유명한 작품들 ID
+        let featuredIDs = [
+            27992,  // A Sunday on La Grande Jatte by Seurat
+            28560,  // The Bedroom by Van Gogh
+            16568,  // American Gothic by Grant Wood
+            111628, // Nighthawks by Edward Hopper
+            16571,  // Paris Street; Rainy Day by Caillebotte
+            14598,  // The Child's Bath by Mary Cassatt
+            80607,  // Stacks of Wheat by Monet
+            16487,  // Water Lilies by Monet
+            28067,  // Self-Portrait by Van Gogh
+            81558,  // The Old Guitarist by Picasso
+            109275, // Greyed Rainbow by Pollock
+            184372  // Untitled by Rothko
+        ]
+        
+        let artworks = await withTaskGroup(of: Artwork?.self) { group in
+            for id in featuredIDs {
+                group.addTask {
+                    do {
+                        let artwork = try await self.getChicagoArtwork(objectID: id)
+                        if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
+                            return artwork
+                        }
+                    } catch {
+                        print("Failed to load Chicago artwork \(id): \(error)")
+                    }
+                    return nil
+                }
+            }
+            
+            var results: [Artwork] = []
+            for await artwork in group {
+                if let artwork = artwork {
+                    results.append(artwork)
+                }
+            }
+            return results
+        }
+        
+        featuredCacheChicago = artworks
+        cacheTimestampChicago = Date()
         return artworks
     }
     
     func clearCache() {
         artworkCache.removeAll()
-        featuredCache = nil
-        cacheTimestamp = nil
+        featuredCacheMet = nil
+        featuredCacheChicago = nil
+        cacheTimestampMet = nil
+        cacheTimestampChicago = nil
     }
 }
 
@@ -145,6 +388,7 @@ class ArtViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var searchText = ""
     @Published var recentSearches: [String] = []
+    @Published var selectedMuseum: Museum = .met
     
     private let maxRecentSearches = 10
     
@@ -160,7 +404,7 @@ class ArtViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            let results = try await ArtService.shared.getFeaturedArtworks()
+            let results = try await ArtService.shared.getFeaturedArtworks(museum: selectedMuseum)
             self.artworks = results
             
             // 진동 효과
@@ -184,14 +428,29 @@ class ArtViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            let objectIDs = try await ArtService.shared.searchArtworks(query: searchText)
+            let objectIDs: [Int]
+            let museum = selectedMuseum // ✅ 클로저 외부에서 캡처
+            
+            switch museum {
+            case .met:
+                objectIDs = try await ArtService.shared.searchMetArtworks(query: searchText)
+            case .chicago:
+                objectIDs = try await ArtService.shared.searchChicagoArtworks(query: searchText)
+            }
             
             // 병렬 처리로 속도 개선
             let artworks = await withTaskGroup(of: Artwork?.self) { group in
-                for id in objectIDs.prefix(15) { // 20개 -> 15개로 감소
+                for id in objectIDs.prefix(15) {
                     group.addTask {
                         do {
-                            let artwork = try await ArtService.shared.getArtwork(objectID: id)
+                            let artwork: Artwork
+                            switch museum { // ✅ 캡처된 로컬 변수 사용
+                            case .met:
+                                artwork = try await ArtService.shared.getMetArtwork(objectID: id)
+                            case .chicago:
+                                artwork = try await ArtService.shared.getChicagoArtwork(objectID: id)
+                            }
+                            
                             if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
                                 return artwork
                             }
@@ -230,6 +489,12 @@ class ArtViewModel: ObservableObject {
         await searchArtworks()
     }
     
+    func changeMuseum(_ museum: Museum) async {
+        selectedMuseum = museum
+        searchText = ""
+        await loadFeaturedArtworks()
+    }
+    
     private func addRecentSearch(_ query: String) {
         if let index = recentSearches.firstIndex(of: query) {
             recentSearches.remove(at: index)
@@ -255,10 +520,17 @@ class ArtViewModel: ObservableObject {
     }
 }
 
+// MARK: - Tag Type Enum
+enum TagType {
+    case popular
+    case recent
+}
+
 // MARK: - Art View
 struct ArtView: View {
     @StateObject private var viewModel = ArtViewModel()
     @FocusState private var isSearchFocused: Bool
+    @State private var selectedTagType: TagType = .popular
     
     var body: some View {
         NavigationView {
@@ -273,23 +545,11 @@ struct ArtView: View {
                     // Search Bar
                     searchBar
                     
-                    // Recent Searches Tags
-                    if !viewModel.recentSearches.isEmpty {
-                        recentSearchesView
-                    }
+                    // Museum Selection Tabs
+                    museumSelectionView
                     
-                    // Header
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("명화 갤러리")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("메트로폴리탄 미술관 컬렉션")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                    // Tag Type Selection & Tags (탭으로 통합)
+                    tagSectionView
                     
                     // Artworks List
                     if viewModel.isLoading {
@@ -374,45 +634,161 @@ struct ArtView: View {
         .padding()
     }
     
-    private var recentSearchesView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("최근 검색어")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(viewModel.recentSearches, id: \.self) { search in
-                        HStack(spacing: 6) {
-                            Text("#\(search)")
+    private var museumSelectionView: some View {
+        HStack(spacing: 12) {
+            ForEach(Museum.allCases, id: \.self) { museum in
+                Button(action: {
+                    Task {
+                        await viewModel.changeMuseum(museum)
+                    }
+                }) {
+                    VStack(spacing: 4) {
+                        HStack {
+                            Image(systemName: "building.columns.fill")
+                                .font(.system(size: 16))
+                            Text(museum.rawValue)
                                 .font(.subheadline)
-                                .fontWeight(.medium)
-                            
-                            Button(action: {
-                                viewModel.removeRecentSearch(search)
-                            }) {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(.secondary)
-                            }
+                                .fontWeight(.semibold)
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.purple.opacity(0.15))
-                        .cornerRadius(16)
-                        .onTapGesture {
-                            Task {
-                                await viewModel.searchFromTag(search)
+                        
+                        if viewModel.selectedMuseum == museum {
+                            Rectangle()
+                                .fill(Color.purple)
+                                .frame(height: 3)
+                                .cornerRadius(1.5)
+                        } else {
+                            Rectangle()
+                                .fill(Color.clear)
+                                .frame(height: 3)
+                        }
+                    }
+                    .foregroundColor(viewModel.selectedMuseum == museum ? .purple : .secondary)
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color(UIColor.systemGroupedBackground))
+    }
+    
+    private var tagSectionView: some View {
+        VStack(spacing: 0) {
+            // 탭 선택 버튼
+            HStack(spacing: 0) {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedTagType = .popular
+                    }
+                }) {
+                    VStack(spacing: 6) {
+                        Text("인기 작품 추천")
+                            .font(.subheadline)
+                            .fontWeight(selectedTagType == .popular ? .semibold : .regular)
+                        
+                        Rectangle()
+                            .fill(selectedTagType == .popular ? Color.orange : Color.clear)
+                            .frame(height: 2)
+                    }
+                    .foregroundColor(selectedTagType == .popular ? .orange : .secondary)
+                    .frame(maxWidth: .infinity)
+                }
+                
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedTagType = .recent
+                    }
+                }) {
+                    VStack(spacing: 6) {
+                        Text("최근 검색어")
+                            .font(.subheadline)
+                            .fontWeight(selectedTagType == .recent ? .semibold : .regular)
+                        
+                        Rectangle()
+                            .fill(selectedTagType == .recent ? Color.purple : Color.clear)
+                            .frame(height: 2)
+                    }
+                    .foregroundColor(selectedTagType == .recent ? .purple : .secondary)
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
+            .background(Color(UIColor.systemGroupedBackground))
+            
+            // 태그 목록 (선택된 타입에 따라)
+            if selectedTagType == .popular {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(viewModel.selectedMuseum.popularTags, id: \.self) { tag in
+                            Button(action: {
+                                Task {
+                                    await viewModel.searchFromTag(tag)
+                                }
+                            }) {
+                                Text("#\(tag)")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(Color.orange.opacity(0.15))
+                                    .foregroundColor(.orange)
+                                    .cornerRadius(16)
                             }
                         }
                     }
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
                 }
-                .padding(.horizontal)
+            } else {
+                if !viewModel.recentSearches.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(viewModel.recentSearches, id: \.self) { search in
+                                HStack(spacing: 6) {
+                                    Text("#\(search)")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                    
+                                    Button(action: {
+                                        viewModel.removeRecentSearch(search)
+                                    }) {
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 10, weight: .bold))
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.purple.opacity(0.15))
+                                .foregroundColor(.purple)
+                                .cornerRadius(16)
+                                .onTapGesture {
+                                    Task {
+                                        await viewModel.searchFromTag(search)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                    }
+                } else {
+                    VStack(spacing: 8) {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 32))
+                            .foregroundColor(.secondary.opacity(0.5))
+                        Text("최근 검색어가 없습니다")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 30)
+                }
             }
         }
-        .padding(.vertical, 8)
+        .background(Color(UIColor.systemGroupedBackground))
     }
     
     private var artworksList: some View {
@@ -663,12 +1039,12 @@ struct ArtworkDetailView: View {
                             HStack {
                                 Image(systemName: "building.columns.fill")
                                     .foregroundColor(.purple)
-                                Text("메트로폴리탄 미술관")
+                                Text(artwork.museum.rawValue)
                                     .fontWeight(.semibold)
                             }
                             .font(.subheadline)
                             
-                            Text("The Metropolitan Museum of Art, New York")
+                            Text(artwork.museum.englishName)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
