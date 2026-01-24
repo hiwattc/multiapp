@@ -13,16 +13,7 @@ struct MenuView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 40) {
-                    // Header
-                VStack(spacing: 16) {
-                    Text("Google 로그인 테스트")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-
-                    Text("로그인 기능만 테스트합니다")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
+                Spacer()
                 
                 // Login Status
                 VStack(spacing: 20) {
@@ -34,7 +25,7 @@ struct MenuView: View {
                                 .foregroundColor(authViewModel.isSignedIn ? .blue : .purple)
 
                             VStack(spacing: 8) {
-                                Text(authViewModel.isSignedIn ? "Google 로그인됨" : "생체인증됨")
+                                Text(authViewModel.isSignedIn ? "로그인됨" : "생체인증됨")
                                     .font(.title2)
                                     .fontWeight(.bold)
 
@@ -46,22 +37,6 @@ struct MenuView: View {
                                     .multilineTextAlignment(.center)
                             }
 
-                            // 나의 메뉴 버튼
-                            Button(action: {
-                                showMyMenu = true
-                            }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "square.grid.2x2.fill")
-                                        .font(.title2)
-                                    Text("나의 메뉴")
-                                        .font(.headline)
-                                }
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .background(Color.blue)
-                                .cornerRadius(12)
-                            }
 
                             // 로그아웃 버튼
                             Button(action: {
@@ -88,6 +63,24 @@ struct MenuView: View {
                                 .background(Color.red)
                                 .cornerRadius(12)
                             }
+                            // 나의 메뉴 버튼
+                            Button(action: {
+                                showMyMenu = true
+                            }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "square.grid.2x2.fill")
+                                        .font(.title2)
+                                    Text("나의 메뉴")
+                                        .font(.headline)
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.blue)
+                                .cornerRadius(12)
+                            }
+                            .padding(.top, 24)
+
                         }
                     } else {
                         // 로그인되지 않은 상태
@@ -176,7 +169,6 @@ struct MenuView: View {
                 Spacer()
             }
             .padding(.horizontal, 32)
-            .padding(.top, 60)
             .background(Color(UIColor.systemGroupedBackground))
             .navigationBarHidden(true)
         }
