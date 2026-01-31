@@ -5,11 +5,13 @@ import Combine
 enum Museum: String, CaseIterable {
     case met = "메트로폴리탄 미술관"
     case chicago = "시카고 미술관"
+    case wiki = "위키피디아"
     
     var englishName: String {
         switch self {
         case .met: return "The Metropolitan Museum of Art"
         case .chicago: return "The Art Institute of Chicago"
+        case .wiki: return "Wikipedia"
         }
     }
     
@@ -28,6 +30,19 @@ enum Museum: String, CaseIterable {
                 "Renoir", "Picasso", "Matisse", "Pollock", "Rothko",
                 "Impressionism", "Modern Art", "Contemporary", "American Art", "Asian Art",
                 "Photography", "Portrait", "Landscape", "Abstract", "Expressionism"
+            ]
+        case .wiki:
+            return [
+                "Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Claude Monet", "Salvador Dalí",
+                "Michelangelo", "Rembrandt", "Johannes Vermeer", "Edgar Degas", "Pierre-Auguste Renoir",
+                "Paul Cézanne", "Henri Matisse", "Wassily Kandinsky", "Jackson Pollock", "Andy Warhol",
+                "Frida Kahlo", "Georgia O'Keeffe", "Gustav Klimt", "Edvard Munch", "Paul Gauguin",
+                "Henri de Toulouse-Lautrec", "Amedeo Modigliani", "Marc Chagall", "Joan Miró", "René Magritte",
+                "Francisco Goya", "Diego Velázquez", "Caravaggio", "Titian", "Raphael",
+                "Jan van Eyck", "Hieronymus Bosch", "Albrecht Dürer", "Peter Paul Rubens", "Jan Vermeer",
+                "Édouard Manet", "Mary Cassatt", "Berthe Morisot", "Camille Pissarro", "Alfred Sisley",
+                "Paul Signac", "Georges Seurat", "Henri Rousseau", "Gustave Courbet", "Jean-François Millet",
+                "Winslow Homer", "Edward Hopper", "Grant Wood", "Norman Rockwell", "Roy Lichtenstein"
             ]
         }
     }
@@ -179,18 +194,58 @@ struct ChicagoArtwork: Codable, Identifiable {
     }
 }
 
+// MARK: - Wikipedia Models
+struct WikipediaSearchResponse: Codable {
+    let query: WikipediaQuery
+    
+    struct WikipediaQuery: Codable {
+        let search: [WikipediaSearchResult]
+        let pages: [String: WikipediaPage]?
+    }
+}
+
+struct WikipediaSearchResult: Codable {
+    let title: String
+    let pageid: Int
+}
+
+struct WikipediaPage: Codable {
+    let pageid: Int
+    let title: String
+    let thumbnail: WikipediaThumbnail?
+    let extract: String?
+    let fullurl: String?
+    
+    struct WikipediaThumbnail: Codable {
+        let source: String
+        let width: Int
+        let height: Int
+    }
+}
+
+struct WikipediaPageInfoResponse: Codable {
+    let query: WikipediaPageInfoQuery
+    
+    struct WikipediaPageInfoQuery: Codable {
+        let pages: [String: WikipediaPage]
+    }
+}
+
 // MARK: - Art Service
 class ArtService {
     static let shared = ArtService()
     private let metBaseURL = "https://collectionapi.metmuseum.org/public/collection/v1"
     private let chicagoBaseURL = "https://api.artic.edu/api/v1"
+    private let wikipediaBaseURL = "https://en.wikipedia.org/w/api.php"
     
     // 캐시 추가
     private var artworkCache: [String: Artwork] = [:] // Changed to String key for museum+id
     private var featuredCacheMet: [Artwork]?
     private var featuredCacheChicago: [Artwork]?
+    private var featuredCacheWiki: [Artwork]?
     private var cacheTimestampMet: Date?
     private var cacheTimestampChicago: Date?
+    private var cacheTimestampWiki: Date?
     private let cacheValidDuration: TimeInterval = 3600 // 1시간
     
     // MARK: - Met Museum Methods
@@ -263,6 +318,8 @@ class ArtService {
             return try await getFeaturedMetArtworks()
         case .chicago:
             return try await getFeaturedChicagoArtworks()
+        case .wiki:
+            return try await getFeaturedWikiArtworks()
         }
     }
     
@@ -372,12 +429,192 @@ class ArtService {
         return artworks
     }
     
+    // MARK: - Wikipedia Methods
+    func searchWikiArtworks(query: String = "famous painting") async throws -> [String] {
+        var searchQuery = query.isEmpty ? "famous painting" : query.trimmingCharacters(in: .whitespaces)
+        
+        // 작가명으로 검색하는 경우 "paintings" 키워드 추가
+        // 작품명이 아닌 것 같으면 (일반적인 작품명 키워드가 없으면) paintings 추가
+        let lowerQuery = searchQuery.lowercased()
+        let isArtworkTitle = lowerQuery.contains("painting") || 
+                            lowerQuery.contains("artwork") ||
+                            lowerQuery.contains("mona lisa") ||
+                            lowerQuery.contains("starry night") ||
+                            lowerQuery.contains("scream") ||
+                            lowerQuery.contains("guernica") ||
+                            lowerQuery.contains("last supper") ||
+                            lowerQuery.contains("birth of venus") ||
+                            lowerQuery.contains("sunflowers") ||
+                            lowerQuery.contains("water lilies") ||
+                            lowerQuery.contains("by ") // "작품명 by 작가명" 형식
+        
+        if !isArtworkTitle && !searchQuery.isEmpty {
+            // 작가명으로 보이면 "paintings" 추가
+            searchQuery = "\(searchQuery) paintings"
+        }
+        
+        let urlString = "\(wikipediaBaseURL)?action=query&format=json&list=search&srsearch=\(searchQuery)&srnamespace=0&srlimit=50&srprop=size"
+        guard let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: encodedURL) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(WikipediaSearchResponse.self, from: data)
+        
+        // 필터링 조건 완화: 작품명, 작가명, 또는 명화 관련 키워드 포함
+        let paintingTitles = response.query.search
+            .filter { result in
+                let title = result.title.lowercased()
+                // 작품명 관련 키워드
+                let hasArtworkKeyword = title.contains("painting") || 
+                                       title.contains("artwork") || 
+                                       title.contains("art") ||
+                                       title.contains("mona lisa") ||
+                                       title.contains("starry night") ||
+                                       title.contains("scream") ||
+                                       title.contains("guernica") ||
+                                       title.contains("last supper") ||
+                                       title.contains("birth of venus") ||
+                                       title.contains("sunflowers") ||
+                                       title.contains("water lilies") ||
+                                       title.contains("by ") // "작품명 by 작가명" 형식
+                
+                // 작가명이 검색어에 포함되어 있고, 제목에도 포함되는 경우
+                let queryWords = lowerQuery.lowercased().components(separatedBy: " ").filter { $0.count > 2 }
+                let hasArtistName = queryWords.contains { word in
+                    title.contains(word.lowercased())
+                }
+                
+                // "List of paintings by" 형식의 페이지도 포함
+                let isListOfPaintings = title.contains("list of paintings") || 
+                                       title.contains("list of works")
+                
+                return hasArtworkKeyword || hasArtistName || isListOfPaintings
+            }
+            .map { $0.title }
+        
+        return Array(paintingTitles.prefix(20))
+    }
+    
+    func getWikiArtwork(title: String) async throws -> Artwork {
+        let cacheKey = "wiki_\(title)"
+        if let cached = artworkCache[cacheKey] {
+            return cached
+        }
+        
+        // 페이지 정보 가져오기 (이미지 포함)
+        let urlString = "\(wikipediaBaseURL)?action=query&format=json&titles=\(title)&prop=pageimages|extracts|info&pithumbsize=800&exintro=true&explaintext=true&inprop=url"
+        guard let encodedURL = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: encodedURL) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(WikipediaPageInfoResponse.self, from: data)
+        
+        guard let page = response.query.pages.values.first else {
+            throw URLError(.badServerResponse)
+        }
+        
+        // 제목에서 작가와 작품명 추출
+        let titleParts = page.title.components(separatedBy: " by ")
+        let artworkTitle = titleParts.first ?? page.title
+        let artistName = titleParts.count > 1 ? titleParts.last : nil
+        
+        // Extract에서 날짜 추출 시도
+        var dateString: String? = nil
+        if let extract = page.extract {
+            let datePattern = #"\b\d{4}\b"#
+            if let regex = try? NSRegularExpression(pattern: datePattern),
+               let match = regex.firstMatch(in: extract, range: NSRange(extract.startIndex..., in: extract)),
+               let range = Range(match.range, in: extract) {
+                dateString = String(extract[range])
+            }
+        }
+        
+        let artwork = Artwork(
+            objectID: page.pageid,
+            title: artworkTitle,
+            artistDisplayName: artistName,
+            objectDate: dateString,
+            medium: nil,
+            department: nil,
+            culture: nil,
+            primaryImage: page.thumbnail?.source,
+            primaryImageSmall: page.thumbnail?.source,
+            objectURL: page.fullurl,
+            creditLine: nil,
+            classification: nil,
+            dimensions: nil,
+            museum: .wiki
+        )
+        
+        artworkCache[cacheKey] = artwork
+        return artwork
+    }
+    
+    private func getFeaturedWikiArtworks() async throws -> [Artwork] {
+        // 캐시 확인
+        if let cached = featuredCacheWiki,
+           let timestamp = cacheTimestampWiki,
+           Date().timeIntervalSince(timestamp) < cacheValidDuration {
+            return cached
+        }
+        
+        // 위키피디아의 유명한 명화들
+        let featuredTitles = [
+            "Mona Lisa",
+            "The Starry Night",
+            "The Scream",
+            "Guernica (Picasso)",
+            "The Last Supper (Leonardo da Vinci)",
+            "Girl with a Pearl Earring",
+            "The Birth of Venus (Botticelli)",
+            "Sunflowers (Van Gogh series)",
+            "Water Lilies (Monet series)",
+            "The Persistence of Memory",
+            "The Night Watch",
+            "Las Meninas"
+        ]
+        
+        let artworks = await withTaskGroup(of: Artwork?.self) { group in
+            for title in featuredTitles {
+                group.addTask {
+                    do {
+                        let artwork = try await self.getWikiArtwork(title: title)
+                        if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
+                            return artwork
+                        }
+                    } catch {
+                        print("Failed to load Wiki artwork \(title): \(error)")
+                    }
+                    return nil
+                }
+            }
+            
+            var results: [Artwork] = []
+            for await artwork in group {
+                if let artwork = artwork {
+                    results.append(artwork)
+                }
+            }
+            return results
+        }
+        
+        featuredCacheWiki = artworks
+        cacheTimestampWiki = Date()
+        return artworks
+    }
+    
     func clearCache() {
         artworkCache.removeAll()
         featuredCacheMet = nil
         featuredCacheChicago = nil
+        featuredCacheWiki = nil
         cacheTimestampMet = nil
         cacheTimestampChicago = nil
+        cacheTimestampWiki = nil
     }
 }
 
@@ -386,11 +623,17 @@ class ArtService {
 class ArtViewModel: ObservableObject {
     @Published var artworks: [Artwork] = []
     @Published var isLoading = false
+    @Published var isLoadingMore = false
+    @Published var hasMoreResults = false
     @Published var searchText = ""
     @Published var recentSearches: [String] = []
-    @Published var selectedMuseum: Museum = .met
+    @Published var selectedMuseum: Museum = .wiki
     
     private let maxRecentSearches = 10
+    private let itemsPerPage = 15
+    private var currentSearchIDs: [Int] = [] // Met, Chicago용
+    private var currentSearchTitles: [String] = [] // Wiki용
+    private var currentOffset = 0
     
     init() {
         loadRecentSearches()
@@ -427,50 +670,40 @@ class ArtViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
+        // 초기화
+        currentOffset = 0
+        currentSearchIDs = []
+        currentSearchTitles = []
+        
         do {
-            let objectIDs: [Int]
-            let museum = selectedMuseum // ✅ 클로저 외부에서 캡처
+            let museum = selectedMuseum
+            let artworks: [Artwork]
             
             switch museum {
             case .met:
-                objectIDs = try await ArtService.shared.searchMetArtworks(query: searchText)
-            case .chicago:
-                objectIDs = try await ArtService.shared.searchChicagoArtworks(query: searchText)
-            }
-            
-            // 병렬 처리로 속도 개선
-            let artworks = await withTaskGroup(of: Artwork?.self) { group in
-                for id in objectIDs.prefix(15) {
-                    group.addTask {
-                        do {
-                            let artwork: Artwork
-                            switch museum { // ✅ 캡처된 로컬 변수 사용
-                            case .met:
-                                artwork = try await ArtService.shared.getMetArtwork(objectID: id)
-                            case .chicago:
-                                artwork = try await ArtService.shared.getChicagoArtwork(objectID: id)
-                            }
-                            
-                            if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
-                                return artwork
-                            }
-                        } catch {
-                            return nil
-                        }
-                        return nil
-                    }
-                }
+                let objectIDs = try await ArtService.shared.searchMetArtworks(query: searchText)
+                currentSearchIDs = objectIDs
+                hasMoreResults = objectIDs.count > itemsPerPage
                 
-                var results: [Artwork] = []
-                for await artwork in group {
-                    if let artwork = artwork {
-                        results.append(artwork)
-                    }
-                }
-                return results
+                artworks = await loadArtworksFromIDs(objectIDs.prefix(itemsPerPage).map { $0 }, museum: museum)
+                
+            case .chicago:
+                let objectIDs = try await ArtService.shared.searchChicagoArtworks(query: searchText)
+                currentSearchIDs = objectIDs
+                hasMoreResults = objectIDs.count > itemsPerPage
+                
+                artworks = await loadArtworksFromIDs(objectIDs.prefix(itemsPerPage).map { $0 }, museum: museum)
+                
+            case .wiki:
+                let titles = try await ArtService.shared.searchWikiArtworks(query: searchText)
+                currentSearchTitles = titles
+                hasMoreResults = titles.count > itemsPerPage
+                
+                artworks = await loadArtworksFromTitles(titles.prefix(itemsPerPage).map { $0 })
             }
             
             self.artworks = artworks
+            currentOffset = artworks.count
             addRecentSearch(searchText)
             
             // 진동 효과
@@ -484,6 +717,118 @@ class ArtViewModel: ObservableObject {
         }
     }
     
+    func loadMoreArtworks() async {
+        guard !isLoadingMore && hasMoreResults else { return }
+        
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        
+        do {
+            let museum = selectedMuseum
+            let newArtworks: [Artwork]
+            
+            switch museum {
+            case .met, .chicago:
+                let remainingIDs = Array(currentSearchIDs.dropFirst(currentOffset))
+                guard !remainingIDs.isEmpty else {
+                    hasMoreResults = false
+                    return
+                }
+                
+                let idsToLoad = remainingIDs.prefix(itemsPerPage).map { $0 }
+                newArtworks = await loadArtworksFromIDs(idsToLoad, museum: museum)
+                
+            case .wiki:
+                let remainingTitles = Array(currentSearchTitles.dropFirst(currentOffset))
+                guard !remainingTitles.isEmpty else {
+                    hasMoreResults = false
+                    return
+                }
+                
+                let titlesToLoad = remainingTitles.prefix(itemsPerPage).map { $0 }
+                newArtworks = await loadArtworksFromTitles(titlesToLoad)
+            }
+            
+            self.artworks.append(contentsOf: newArtworks)
+            currentOffset += newArtworks.count
+            
+            // 더 이상 로드할 항목이 없으면
+            switch museum {
+            case .met, .chicago:
+                hasMoreResults = currentOffset < currentSearchIDs.count
+            case .wiki:
+                hasMoreResults = currentOffset < currentSearchTitles.count
+            }
+            
+            // 진동 효과
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+        } catch {
+            print("Error loading more: \(error)")
+        }
+    }
+    
+    private func loadArtworksFromIDs(_ ids: [Int], museum: Museum) async -> [Artwork] {
+        return await withTaskGroup(of: Artwork?.self) { group in
+            for id in ids {
+                group.addTask {
+                    do {
+                        let artwork: Artwork
+                        switch museum {
+                        case .met:
+                            artwork = try await ArtService.shared.getMetArtwork(objectID: id)
+                        case .chicago:
+                            artwork = try await ArtService.shared.getChicagoArtwork(objectID: id)
+                        case .wiki:
+                            return nil
+                        }
+                        
+                        if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
+                            return artwork
+                        }
+                    } catch {
+                        return nil
+                    }
+                    return nil
+                }
+            }
+            
+            var results: [Artwork] = []
+            for await artwork in group {
+                if let artwork = artwork {
+                    results.append(artwork)
+                }
+            }
+            return results
+        }
+    }
+    
+    private func loadArtworksFromTitles(_ titles: [String]) async -> [Artwork] {
+        return await withTaskGroup(of: Artwork?.self) { group in
+            for title in titles {
+                group.addTask {
+                    do {
+                        let artwork = try await ArtService.shared.getWikiArtwork(title: title)
+                        if artwork.primaryImage != nil && !artwork.primaryImage!.isEmpty {
+                            return artwork
+                        }
+                    } catch {
+                        return nil
+                    }
+                    return nil
+                }
+            }
+            
+            var results: [Artwork] = []
+            for await artwork in group {
+                if let artwork = artwork {
+                    results.append(artwork)
+                }
+            }
+            return results
+        }
+    }
+    
     func searchFromTag(_ query: String) async {
         searchText = query
         await searchArtworks()
@@ -492,6 +837,10 @@ class ArtViewModel: ObservableObject {
     func changeMuseum(_ museum: Museum) async {
         selectedMuseum = museum
         searchText = ""
+        currentSearchIDs = []
+        currentSearchTitles = []
+        currentOffset = 0
+        hasMoreResults = false
         await loadFeaturedArtworks()
     }
     
@@ -796,6 +1145,33 @@ struct ArtView: View {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.artworks) { artwork in
                     ArtworkCard(artwork: artwork)
+                }
+                
+                // 더보기 버튼
+                if viewModel.hasMoreResults {
+                    Button(action: {
+                        Task {
+                            await viewModel.loadMoreArtworks()
+                        }
+                    }) {
+                        HStack {
+                            if viewModel.isLoadingMore {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Text("더보기")
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.purple)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                    .disabled(viewModel.isLoadingMore)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
                 }
             }
             .padding()

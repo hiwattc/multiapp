@@ -499,6 +499,15 @@ struct HabitView: View {
                 // Collapsible Header Section
                 if isHeaderExpanded {
                     VStack(spacing: 0) {
+
+                        // Dashboard Section
+                        if !isTextFieldFocused && !viewModel.habits.isEmpty {
+                            dashboardSection
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
+                        }
+
+
                         // Inspiration Quote Section
                         if let verse = selectedVerse {
                             MarqueeText(
@@ -514,12 +523,6 @@ struct HabitView: View {
                                 .padding(.bottom, 8)
                         }
 
-                        // Dashboard Section
-                        if !isTextFieldFocused && !viewModel.habits.isEmpty {
-                            dashboardSection
-                                .padding(.top, 8)
-                                .padding(.bottom, 4)
-                        }
 
                         // Add Habit Section
                         addHabitSection
@@ -604,46 +607,46 @@ struct HabitView: View {
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Button(action: {
-                    viewModel.goToToday()
-                }) {
-                    Text("오늘")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(12)
+                HStack(spacing: 8) {
+                    Button(action: {
+                        viewModel.goToToday()
+                    }) {
+                        Text("오늘")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(12)
+                    }
+                    
+                    // 헤더 접기/펼치기 버튼
+                    Button(action: {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            isHeaderExpanded.toggle()
+                            // 접을 때 입력창 포커스 해제
+                            if !isHeaderExpanded {
+                                isTextFieldFocused = false
+                            }
+                        }
+                    }) {
+                        Image(systemName: isHeaderExpanded ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(isHeaderExpanded ? .blue : .gray)
+                            .frame(width: 44, height: 44)
+                    }
                 }
             }
 
             Spacer()
 
-            HStack(spacing: 8) {
-                // 헤더 접기/펼치기 버튼
-                Button(action: {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        isHeaderExpanded.toggle()
-                        // 접을 때 입력창 포커스 해제
-                        if !isHeaderExpanded {
-                            isTextFieldFocused = false
-                        }
-                    }
-                }) {
-                    Image(systemName: isHeaderExpanded ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(isHeaderExpanded ? .blue : .gray)
-                        .frame(width: 44, height: 44)
-                }
-                
-                Button(action: {
-                    viewModel.nextMonth()
-                }) {
-                    Image(systemName: "chevron.right")
-                        .font(.title3)
-                        .foregroundColor(.blue)
-                        .frame(width: 44, height: 44)
-                }
+            Button(action: {
+                viewModel.nextMonth()
+            }) {
+                Image(systemName: "chevron.right")
+                    .font(.title3)
+                    .foregroundColor(.blue)
+                    .frame(width: 44, height: 44)
             }
         }
         .padding(.vertical, 8)
