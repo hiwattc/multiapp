@@ -23,6 +23,10 @@
 	<string>걸음 수 측정을 위해 모션 데이터 접근이 필요합니다.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>명화를 사진 앱에 저장하기 위해 권한이 필요합니다.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>백업 파일을 불러오고 저장하기 위해 파일 접근 권한이 필요합니다.</string>
+	<key>NSUbiquitousContainersUsageDescription</key>
+	<string>습관 데이터를 iCloud에 백업하고 다른 기기와 동기화하기 위해 사용됩니다.</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.news.habit</string>

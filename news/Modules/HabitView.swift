@@ -91,6 +91,20 @@ class HabitViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.scheduleAllHabitReminders()
         }
+        
+        // 습관 데이터 변경 감지 (알림 삭제 등)
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("HabitsDataChanged"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.loadHabits()
+            print("🔄 습관 데이터 새로고침 완료 (외부 변경 감지)")
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("HabitsDataChanged"), object: nil)
     }
 
     var currentYear: Int {
@@ -460,6 +474,10 @@ struct HabitView: View {
     @State private var showingDeleteConfirmation = false
     @State private var habitToDelete: Habit?
     @State private var showingQuoteList = false
+    @State private var showNotificationManager = false
+    @State private var showBackupManager = false
+    @State private var showDiaryList = false
+    @State private var isHeaderExpanded = false
 
     // Inspiration Quote State
     @State private var selectedVerse: BibleVerse?
@@ -475,32 +493,51 @@ struct HabitView: View {
 
             VStack(spacing: 0) {
 
-                // Month Navigation
+                // Month Navigation with Toggle
                 monthNavigationBar
 
-                // Inspiration Quote Section
-                if let verse = selectedVerse {
-                    MarqueeText(
-                        text: verse.krv,
-                        reference: verse.reference,
-                        onShowMore: {
-                            showingQuoteList = true
-                        },
-                        onRefresh: selectRandomVerse
-                    )
-                        .padding(.horizontal)
-                        .padding(.top, 16)
-                        .padding(.bottom, 8)
-                        .transition(.opacity.combined(with: .scale))
-                }
+                // Collapsible Header Section
+                if isHeaderExpanded {
+                    VStack(spacing: 0) {
+                        // Inspiration Quote Section
+                        if let verse = selectedVerse {
+                            MarqueeText(
+                                text: verse.krv,
+                                reference: verse.reference,
+                                onShowMore: {
+                                    showingQuoteList = true
+                                },
+                                onRefresh: selectRandomVerse
+                            )
+                                .padding(.horizontal)
+                                .padding(.top, 16)
+                                .padding(.bottom, 8)
+                        }
 
-                // Add Habit Section
-                addHabitSection
-                    .padding(.top, 8)
+                        // Dashboard Section
+                        if !isTextFieldFocused && !viewModel.habits.isEmpty {
+                            dashboardSection
+                                .padding(.top, 8)
+                                .padding(.bottom, 4)
+                        }
 
-                // Recommended Habits Section
-                if isTextFieldFocused {
-                    recommendedHabitsSection
+                        // Add Habit Section
+                        addHabitSection
+                            .padding(.top, 8)
+
+                        // Recommended Habits Section
+                        if isTextFieldFocused {
+                            recommendedHabitsSection
+                        }
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .top).combined(with: .opacity)
+                    ))
+                } else if !viewModel.habits.isEmpty {
+                    // 접혔을 때 간단한 요약
+                    compactSummaryView
+                        .transition(.opacity)
                 }
 
                 // Habits List
@@ -538,6 +575,15 @@ struct HabitView: View {
         .sheet(isPresented: $showingQuoteList) {
             QuoteListView(quotes: viewModel.bibleVerses)
         }
+        .sheet(isPresented: $showNotificationManager) {
+            NotificationManagerView()
+        }
+        .sheet(isPresented: $showBackupManager) {
+            BackupManagerView()
+        }
+        .sheet(isPresented: $showDiaryList) {
+            DiaryListView()
+        }
     }
 
     private var monthNavigationBar: some View {
@@ -573,13 +619,31 @@ struct HabitView: View {
 
             Spacer()
 
-            Button(action: {
-                viewModel.nextMonth()
-            }) {
-                Image(systemName: "chevron.right")
-                    .font(.title3)
-                    .foregroundColor(.blue)
-                    .frame(width: 44, height: 44)
+            HStack(spacing: 8) {
+                // 헤더 접기/펼치기 버튼
+                Button(action: {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        isHeaderExpanded.toggle()
+                        // 접을 때 입력창 포커스 해제
+                        if !isHeaderExpanded {
+                            isTextFieldFocused = false
+                        }
+                    }
+                }) {
+                    Image(systemName: isHeaderExpanded ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(isHeaderExpanded ? .blue : .gray)
+                        .frame(width: 44, height: 44)
+                }
+                
+                Button(action: {
+                    viewModel.nextMonth()
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                        .frame(width: 44, height: 44)
+                }
             }
         }
         .padding(.vertical, 8)
@@ -644,6 +708,62 @@ struct HabitView: View {
                     showingDeleteConfirmation = true
                 }
             }
+            
+            // 알림 설정 확인 버튼
+            Section {
+                Button(action: {
+                    showNotificationManager = true
+                }) {
+                    HStack {
+                        Image(systemName: "bell.badge.fill")
+                            .font(.title3)
+                            .foregroundColor(.orange)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("알림 설정 확인")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            Text("등록된 모든 알림을 확인하고 관리하세요")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+                
+                // 백업 설정 버튼
+                Button(action: {
+                    showBackupManager = true
+                }) {
+                    HStack {
+                        Image(systemName: "icloud.and.arrow.up.fill")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("백업 설정")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            Text("습관 데이터 백업 및 복원")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
         }
         .listStyle(.insetGrouped)
             .padding(.bottom, 80)
@@ -667,6 +787,140 @@ struct HabitView: View {
         return "새 습관 추가 (\(todayString))"
     }
 
+    // MARK: - Compact Summary View
+    private var compactSummaryView: some View {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayString = formatter.string(from: Date())
+        
+        let todayCompletedCount = viewModel.habits.filter { habit in
+            habit.completions[todayString] == true
+        }.count
+        
+        let completionRate = viewModel.habits.count > 0 
+            ? Double(todayCompletedCount) / Double(viewModel.habits.count)
+            : 0.0
+        
+        return HStack(spacing: 12) {
+            // 미니 프로그레스
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+                    
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [.green, .mint]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geometry.size.width * completionRate)
+                }
+            }
+            .frame(height: 4)
+            
+            // 요약 텍스트
+            Text("\(todayCompletedCount) / \(viewModel.habits.count)")
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .background(Color(UIColor.secondarySystemGroupedBackground).opacity(0.5))
+    }
+    
+    // MARK: - Dashboard Section
+    private var dashboardSection: some View {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayString = formatter.string(from: Date())
+        
+        let todayCompletedCount = viewModel.habits.filter { habit in
+            habit.completions[todayString] == true
+        }.count
+        let totalRemindersCount = viewModel.habits.reduce(0) { $0 + $1.reminderTimes.count }
+        
+        let completionRate = viewModel.habits.count > 0 
+            ? Double(todayCompletedCount) / Double(viewModel.habits.count)
+            : 0.0
+        
+        return HStack(spacing: 12) {
+            // 미니 프로그레스바
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+                    
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [.green, .mint]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geometry.size.width * completionRate)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: completionRate)
+                }
+            }
+            .frame(height: 4)
+            
+            // 완료 상태 텍스트
+            Text("\(todayCompletedCount) / \(viewModel.habits.count)")
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                .foregroundColor(.secondary)
+            
+            // 알림 버튼 (심플)
+            Button(action: {
+                showNotificationManager = true
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: 13))
+                        .foregroundColor(.orange)
+                    
+                    Text("\(totalRemindersCount)")
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(.orange)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.orange.opacity(0.1))
+                )
+            }
+            .buttonStyle(.plain)
+            
+            // 일기 버튼
+            Button(action: {
+                showDiaryList = true
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "book.fill")
+                        .font(.system(size: 13))
+                        .foregroundColor(.purple)
+                    
+                    Text("일기")
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(.purple)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.purple.opacity(0.1))
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .background(Color(UIColor.secondarySystemGroupedBackground).opacity(0.5))
+    }
+    
     private var recommendedHabitsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("추천 습관")
