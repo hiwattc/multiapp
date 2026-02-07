@@ -27,6 +27,14 @@ struct MyMenuView: View {
     @State private var showCryptoView = false
     @State private var showStockMapView = false
     @State private var showRSSReaderView = false
+    @State private var showLiDARScanView = false
+    @State private var showLiDARScanView2 = false
+    @State private var showSavedScansView = false
+    @State private var show3DGame1 = false
+    @State private var show3DGame2 = false
+    @State private var show3DGame3 = false
+    @State private var show3DGame4 = false
+    @State private var show3DGame5 = false
 
     init() {
         // MailService 초기화는 onAppear에서 수행
@@ -56,6 +64,9 @@ struct MyMenuView: View {
 
         // 증강 현실 및 카메라
         MyMenuItem(title: "증강현실", icon: "arkit", color: .orange, description: "AR 콘텐츠 및 증강 현실", category: "AR/VR"),
+        MyMenuItem(title: "라이다1", icon: "cube.transparent.fill", color: .cyan, description: "LiDAR로 공간 스캐닝", category: "AR/VR"),
+        MyMenuItem(title: "라이다2", icon: "cube.transparent.fill", color: .blue, description: "LiDAR 스캐닝 (버튼형)", category: "AR/VR"),
+        MyMenuItem(title: "저장된 스캔", icon: "folder.fill", color: .blue, description: "저장된 LiDAR 스캔 보기", category: "AR/VR"),
         MyMenuItem(title: "카메라", icon: "camera.fill", color: .red, description: "사진 촬영 및 동영상", category: "미디어"),
         MyMenuItem(title: "QR 스캔", icon: "qrcode.viewfinder", color: .green, description: "QR 코드 스캔", category: "도구"),
 
@@ -74,7 +85,14 @@ struct MyMenuView: View {
 
         // 게임
         MyMenuItem(title: "구슬미로", icon: "circle.grid.cross.fill", color: .blue, description: "자이로 센서로 미로 탈출", category: "게임"),
-        MyMenuItem(title: "모험", icon: "figure.walk", color: .green, description: "힐링되는 자연 모험", category: "게임")
+        MyMenuItem(title: "모험", icon: "figure.walk", color: .green, description: "힐링되는 자연 모험", category: "게임"),
+        
+        // 3D 게임
+        MyMenuItem(title: "게임1", icon: "gamecontroller.fill", color: .purple, description: "3D 공 터치 게임", category: "3D게임"),
+        MyMenuItem(title: "게임2", icon: "sword.fill", color: .red, description: "RPG 스타일 3D 게임", category: "3D게임"),
+        MyMenuItem(title: "게임3", icon: "arkit", color: .orange, description: "AR RPG 증강현실 게임", category: "3D게임"),
+        MyMenuItem(title: "게임4", icon: "shield.fill", color: .green, description: "2D 방어 서바이벌 게임", category: "3D게임"),
+        MyMenuItem(title: "게임5", icon: "balloon.fill", color: .pink, description: "AR 풍선 터트리기 게임", category: "3D게임")
     ]
 
     // 카테고리별로 그룹화
@@ -83,7 +101,7 @@ struct MyMenuView: View {
     }
 
     var categories: [String] {
-        ["뉴스", "금융", "환경", "센서", "통신", "AR/VR", "미디어", "도구", "생산성", "건강", "엔터", "게임"]
+        ["뉴스", "금융", "환경", "센서", "통신", "AR/VR", "미디어", "도구", "생산성", "건강", "엔터", "게임", "3D게임"]
     }
 
     var body: some View {
@@ -183,6 +201,30 @@ struct MyMenuView: View {
         .sheet(isPresented: $showRSSReaderView) {
             RSSReaderView()
         }
+        .sheet(isPresented: $showLiDARScanView) {
+            LiDARScanView()
+        }
+        .sheet(isPresented: $showLiDARScanView2) {
+            LiDARScanView2()
+        }
+        .sheet(isPresented: $showSavedScansView) {
+            SavedScansListView()
+        }
+        .sheet(isPresented: $show3DGame1) {
+            Game3DView1()
+        }
+        .sheet(isPresented: $show3DGame2) {
+            Game3DView2()
+        }
+        .sheet(isPresented: $show3DGame3) {
+            Game3DView3()
+        }
+        .sheet(isPresented: $show3DGame4) {
+            Game2DDefenseView()
+        }
+        .sheet(isPresented: $show3DGame5) {
+            GameARBalloonView()
+        }
     }
 
     private func performAction(for item: MyMenuItem) {
@@ -202,6 +244,12 @@ struct MyMenuView: View {
             showMail()
         case "증강현실":
             showAugmentedReality()
+        case "라이다1":
+            showLiDARScan()
+        case "라이다2":
+            showLiDARScan2()
+        case "저장된 스캔":
+            showSavedScans()
         case "걸음 수":
             showStepCounter()
         case "계산기":
@@ -212,6 +260,16 @@ struct MyMenuView: View {
             showMarbleMazeGame()
         case "모험":
             showAdventureGameView()
+        case "게임1":
+            show3DGame1View()
+        case "게임2":
+            show3DGame2View()
+        case "게임3":
+            show3DGame3View()
+        case "게임4":
+            show3DGame4View()
+        case "게임5":
+            show3DGame5View()
         case "음악":
             showMusic()
         default:
@@ -254,6 +312,46 @@ struct MyMenuView: View {
     private func showAugmentedReality() {
         print("🎭 AR 큐브 게임 시작")
         showARGame = true
+    }
+    
+    private func showLiDARScan() {
+        print("📡 LiDAR 스캐닝 시작")
+        showLiDARScanView = true
+    }
+    
+    private func showLiDARScan2() {
+        print("📡 LiDAR 스캐닝 2 시작")
+        showLiDARScanView2 = true
+    }
+    
+    private func showSavedScans() {
+        print("📁 저장된 스캔 목록 열기")
+        showSavedScansView = true
+    }
+    
+    private func show3DGame1View() {
+        print("🎮 3D 게임1 시작")
+        show3DGame1 = true
+    }
+    
+    private func show3DGame2View() {
+        print("🎮 3D 게임2 (RPG) 시작")
+        show3DGame2 = true
+    }
+    
+    private func show3DGame3View() {
+        print("🎮 3D 게임3 (AR RPG) 시작")
+        show3DGame3 = true
+    }
+    
+    private func show3DGame4View() {
+        print("🎮 게임4 (2D 방어 게임) 시작")
+        show3DGame4 = true
+    }
+    
+    private func show3DGame5View() {
+        print("🎮 게임5 (AR 풍선 게임) 시작")
+        show3DGame5 = true
     }
 
     private func showStepCounter() {
