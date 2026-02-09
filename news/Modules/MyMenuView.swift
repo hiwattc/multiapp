@@ -32,7 +32,9 @@ struct MyMenuView: View {
     @State private var showLiDARScanView3 = false
     @State private var showLiDARScanView4 = false
     @State private var showLiDARScanView5 = false
+    @State private var showLiDARScanView6 = false
     @State private var showSavedScansView = false
+    @State private var showOBJViewerView = false
     @State private var show3DGame1 = false
     @State private var show3DGame2 = false
     @State private var showRacingGame = false
@@ -75,7 +77,9 @@ struct MyMenuView: View {
         MyMenuItem(title: "라이다3", icon: "cube.transparent.fill", color: .purple, description: "컬러 구분 3D 스캐닝", category: "AR/VR"),
         MyMenuItem(title: "라이다4", icon: "grid.circle.fill", color: .green, description: "AR 그리드 손전등 효과", category: "AR/VR"),
         MyMenuItem(title: "라이다5", icon: "square.grid.3x3", color: .pink, description: "평면 그리드 표시", category: "AR/VR"),
+        MyMenuItem(title: "라이다6", icon: "square.3.layers.3d", color: .teal, description: "지면/벽면 메시 표시", category: "AR/VR"),
         MyMenuItem(title: "저장된 스캔", icon: "folder.fill", color: .blue, description: "저장된 LiDAR 스캔 보기", category: "AR/VR"),
+        MyMenuItem(title: "3D 뷰어", icon: "cube.transparent.fill", color: .indigo, description: "OBJ 파일 3D 보기", category: "AR/VR"),
         MyMenuItem(title: "카메라", icon: "camera.fill", color: .red, description: "사진 촬영 및 동영상", category: "미디어"),
         MyMenuItem(title: "QR 스캔", icon: "qrcode.viewfinder", color: .green, description: "QR 코드 스캔", category: "도구"),
 
@@ -228,8 +232,14 @@ struct MyMenuView: View {
         .sheet(isPresented: $showLiDARScanView5) {
             LiDARScanView5()
         }
+        .sheet(isPresented: $showLiDARScanView6) {
+            LiDARScanView6()
+        }
         .sheet(isPresented: $showSavedScansView) {
             SavedScansListView()
+        }
+        .fullScreenCover(isPresented: $showOBJViewerView) {
+            OBJFileViewerView()
         }
         .sheet(isPresented: $show3DGame1) {
             Game3DView1()
@@ -284,8 +294,12 @@ struct MyMenuView: View {
             showLiDARScan4()
         case "라이다5":
             showLiDARScan5()
+        case "라이다6":
+            showLiDARScan6()
         case "저장된 스캔":
             showSavedScans()
+        case "3D 뷰어":
+            showOBJViewer()
         case "걸음 수":
             showStepCounter()
         case "계산기":
@@ -381,9 +395,19 @@ struct MyMenuView: View {
         showLiDARScanView5 = true
     }
     
+    private func showLiDARScan6() {
+        print("📡 LiDAR 스캐닝 6 시작 (지면/벽면 메시)")
+        showLiDARScanView6 = true
+    }
+    
     private func showSavedScans() {
         print("📁 저장된 스캔 목록 열기")
         showSavedScansView = true
+    }
+    
+    private func showOBJViewer() {
+        print("👁️ OBJ 3D 뷰어 열기")
+        showOBJViewerView = true
     }
     
     private func show3DGame1View() {
