@@ -43,6 +43,7 @@ struct MyMenuView: View {
     @State private var show3DGame3 = false
     @State private var show3DGame4 = false
     @State private var show3DGame5 = false
+    @State private var show3DGame6 = false
 
     init() {
         // MailService 초기화는 onAppear에서 수행
@@ -108,7 +109,8 @@ struct MyMenuView: View {
         MyMenuItem(title: "게임2", icon: "sword.fill", color: .red, description: "RPG 스타일 3D 게임", category: "3D게임"),
         MyMenuItem(title: "게임3", icon: "arkit", color: .orange, description: "AR RPG 증강현실 게임", category: "3D게임"),
         MyMenuItem(title: "게임4", icon: "shield.fill", color: .green, description: "2D 방어 서바이벌 게임", category: "3D게임"),
-        MyMenuItem(title: "게임5", icon: "balloon.fill", color: .pink, description: "AR 풍선 터트리기 게임", category: "3D게임")
+        MyMenuItem(title: "게임5", icon: "balloon.fill", color: .pink, description: "AR 풍선 터트리기 게임", category: "3D게임"),
+        MyMenuItem(title: "게임6", icon: "target", color: .blue, description: "AR 타워 디펜스 게임", category: "3D게임")
     ]
 
     // 카테고리별로 그룹화
@@ -256,6 +258,9 @@ struct MyMenuView: View {
         .sheet(isPresented: $show3DGame5) {
             GameARBalloonView()
         }
+        .sheet(isPresented: $show3DGame6) {
+            GameARTowerDefenseView()
+        }
         .sheet(isPresented: $showRacingGame) {
             RacingGameView()
         }
@@ -326,6 +331,8 @@ struct MyMenuView: View {
             show3DGame4View()
         case "게임5":
             show3DGame5View()
+        case "게임6":
+            show3DGame6View()
         case "음악":
             showMusic()
         default:
@@ -433,6 +440,11 @@ struct MyMenuView: View {
     private func show3DGame5View() {
         print("🎮 게임5 (AR 풍선 게임) 시작")
         show3DGame5 = true
+    }
+    
+    private func show3DGame6View() {
+        print("🎮 게임6 (AR 타워 디펜스) 시작")
+        show3DGame6 = true
     }
     
     private func showRacingGameView() {
