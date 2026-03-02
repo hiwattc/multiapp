@@ -757,6 +757,7 @@ struct RSSReaderView: View {
         selectedTab = .favorite
         
         // 첫 번째 즐겨찾기 피드를 선택하고 로드
+        /*
         if let firstFavorite = favorites.first {
             selectedFeed = firstFavorite
             Task {
@@ -764,6 +765,7 @@ struct RSSReaderView: View {
                 print("⭐️ 첫 번째 즐겨찾기 피드 로드 완료: \(firstFavorite.name)")
             }
         }
+        */
     }
 }
 

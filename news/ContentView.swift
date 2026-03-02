@@ -7,6 +7,7 @@ import WidgetKit
 enum TabType: String, CaseIterable {
     case habit = "해빗"
     case news = "뉴스"
+    case news2 = "뉴스2"
     case map = "지도"
     case art = "미술"
     case ping = "핑"
@@ -15,6 +16,7 @@ enum TabType: String, CaseIterable {
     var icon: String {
         switch self {
         case .news: return "newspaper.fill"
+        case .news2: return "doc.richtext.fill"
         case .map: return "map.fill"
         case .art: return "paintpalette.fill"
         case .habit: return "checkmark.circle.fill"
@@ -116,6 +118,8 @@ struct ContentView: View {
                     HabitView(viewModel: habitViewModel)
                 case .news:
                     NewsView()
+                case .news2:
+                    RSSReaderView()
                 case .map:
                     MapView()
                 case .art:
